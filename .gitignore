@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Expo / React Native
+.expo/
+.expo-shared/
+dist/
+build/
+
+# System
+.DS_Store
+
+# Env
+.env
