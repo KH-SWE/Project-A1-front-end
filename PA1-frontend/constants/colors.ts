@@ -16,6 +16,7 @@ export const colors = themeColors as {
   // text
   textOnBgLight: string;
   textOnBgDark: string;
+  textAccent: string;
   // brand
   brandPrimary: string;
   brandSecondary: string;

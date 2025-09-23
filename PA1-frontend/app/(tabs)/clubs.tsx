@@ -1,9 +1,16 @@
-import { View, Text } from "react-native";
+import { ScrollView, Text } from "react-native";
 
 export default function ClubsScreen() {
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <ScrollView 
+      className="flex-1"
+      contentContainerStyle={{ 
+        flexGrow: 1, 
+        alignItems: "center", 
+        justifyContent: "center" 
+      }}
+    >
       <Text>Clubs</Text>
-    </View>
+    </ScrollView>
   );
 }

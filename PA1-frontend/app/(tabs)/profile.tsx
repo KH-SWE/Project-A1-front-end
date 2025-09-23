@@ -1,10 +1,17 @@
-import { View, Text } from "react-native";
+import ProfileView from "@/components/ProfileView";
+import { ScrollView } from "react-native";
 
 export default function ProfileScreen() {
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Profile</Text>
-      <Text className="text-primary font-bold">Hello!</Text>
-    </View>
+    <ScrollView 
+      className="flex-1"
+      contentContainerStyle={{ 
+        flexGrow: 1, 
+        alignItems: "center", 
+        justifyContent: "center" 
+      }}
+    >
+      <ProfileView />
+    </ScrollView>
   );
 }
