@@ -31,6 +31,17 @@ module.exports = {
             successAlert: '#E0A800', // strong yellow
             infoAlert: '#3A86FF', // strong blue
         },
+        fontFamily: {
+            "inter-light": ["Inter_300Light"],
+            "inter-regular": ["Inter_400Regular"],
+            "inter-medium": ["Inter_500Medium"],
+            "inter-semibold": ["Inter_600SemiBold"],
+            "inter-bold": ["Inter_700Bold"],
+            "inter-extrabold": ["Inter_800ExtraBold"],
+            "inter-black": ["Inter_900Black"],
+            // fallback generic family
+            inter: ["Inter_400Regular", "Inter_600SemiBold", "sans"],
+        },
         fontSize: {
             // Mobile-optimized typography scale
             'xs': ['12px', { lineHeight: '16px' }],     // Small labels, captions

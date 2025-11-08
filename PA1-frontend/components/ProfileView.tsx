@@ -11,7 +11,6 @@ import InstaIcon from "@/assets/social/instagram.svg";
 import LinkedInIcon from "@/assets/social/linkedin.svg";
 import TwitterIcon from "@/assets/social/twitter.svg";
 import DiscordIcon from "@/assets/social/discord.svg";
-import EndPageMascot from "./mascot/EndPageMascot";
 
 export default function ProfileView() {
 	return (
@@ -87,7 +86,6 @@ export default function ProfileView() {
                     </View>
                 </View>
 			</View>
-            <EndPageMascot />
 		</ScrollView>
 	);
 }
