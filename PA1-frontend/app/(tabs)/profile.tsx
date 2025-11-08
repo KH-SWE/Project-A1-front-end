@@ -1,6 +1,7 @@
 import ProfileView from "@/components/ProfileView";
 import { ScrollView } from "react-native";
 
+
 export default function ProfileScreen() {
   return (
     <ScrollView 
@@ -12,6 +13,8 @@ export default function ProfileScreen() {
       }}
     >
       <ProfileView />
+
+      
     </ScrollView>
   );
 }

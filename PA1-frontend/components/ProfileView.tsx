@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from "react-native";
+import { Pressable, View, Text, ScrollView, Alert } from "react-native";
 
 import { colors } from "../constants/colors";
 
@@ -12,7 +12,29 @@ import LinkedInIcon from "@/assets/social/linkedin.svg";
 import TwitterIcon from "@/assets/social/twitter.svg";
 import DiscordIcon from "@/assets/social/discord.svg";
 
+import { useAuth } from "@/components/AuthProvider";
+import { useRouter } from "expo-router";
+import { api } from "../app/lib/api";
+import { getRefreshToken } from "../app/lib/token";
+
+
 export default function ProfileView() {
+	const { logout, userId } = useAuth();
+	const router = useRouter();
+	const handleLogout = async () => {
+		try {
+			const refreshToken = await getRefreshToken();
+			if (refreshToken) {
+				await api.post('/api/auth/logout', { refreshToken });
+			}
+		} catch (e) {
+			console.warn('server logout failed', e);
+			Alert.alert('Logout', 'Server logout failed (ignored)');
+		} finally {
+			await logout();
+			router.replace('/welcome' as any);
+		}
+	};
 	return (
 		<ScrollView
 			className="flex flex-col bg-backgroundLight w-full h-full"
@@ -23,7 +45,7 @@ export default function ProfileView() {
 				gap: 10,
 			}}
 		>
-            {/* Main container for profile info */}
+			{/* Main container for profile info */}
 			<View className="mx-4 my-14 absolute top-0">
 				{/* Profile pic, name, and bio section */}
 				<View className="">
@@ -39,6 +61,8 @@ export default function ProfileView() {
 						<View className="m-4 items-left">
 							<Text className="text-heading">John Doe</Text>
 							<Text className="text-button text-textAccent">@johndoe</Text>
+							{/* show persisted user id for quick verification */}
+							<Text className="text-caption text-textOnBgLight">id: {userId ?? '(none)'}</Text>
 							<Text className="text-caption text-textOnBgLight">He / Him</Text>
 						</View>
 					</View>
@@ -51,40 +75,79 @@ export default function ProfileView() {
 					</View>
 				</View>
 
-                {/* Academic info and social links section */}
-                <View className="flex flex-row items-center justify-between m-2">
-                    {/* Card */}
-                    <View className="flex flex-col items-start gap-3 p-5 shadow-lg bg-backgroundLight w-auto rounded-3xl">
-                        {/* Major/Minor */}
-                        <View className="flex-row items-center">
-                            <View className="mr-4"><GradCapIcon width={24} height={24} fill={colors.accent}/></View>
-                            <Text className="text-caption font-semibold">Mechanical Engineering</Text>
-                        </View>
-                        {/* Faculty */}
-                        <View className="flex-row items-center">
-                            <View className="mr-4"><SchoolIcon width={24} height={24} fill={colors.accent}/></View>
-                            <Text className="text-caption font-semibold">Schulich School of Engineering</Text>
-                        </View>
-                        {/* Year of Study */}
-                        <View className="flex-row items-center">
-                            <View className="mr-4"><HashtagIcon width={24} height={24} fill={colors.accent}/></View>
-                            <Text className="text-caption font-semibold">4th Year</Text>
-                        </View>
-                        {/* Status */}
-                        <View className="flex-row items-center">
-                            <View className="mr-4"><CircleIcon width={24} height={24} fill={colors.accent}/></View>
-                            <Text className="text-caption font-semibold">Open to Study Groups, Clubs</Text>
-                        </View>
-                    </View>
+				{/* Academic info and social links section */}
+				<View className="flex flex-row items-center justify-between m-2">
+					{/* Card */}
+					<View className="flex flex-col items-start gap-3 p-5 shadow-lg bg-backgroundLight w-auto rounded-3xl">
+						{/* Major/Minor */}
+						<View className="flex-row items-center">
+							<View className="mr-4">
+								<GradCapIcon width={24} height={24} fill={colors.accent} />
+							</View>
+							<Text className="text-caption font-semibold">
+								Mechanical Engineering
+							</Text>
+						</View>
+						{/* Faculty */}
+						<View className="flex-row items-center">
+							<View className="mr-4">
+								<SchoolIcon width={24} height={24} fill={colors.accent} />
+							</View>
+							<Text className="text-caption font-semibold">
+								Schulich School of Engineering
+							</Text>
+						</View>
+						{/* Year of Study */}
+						<View className="flex-row items-center">
+							<View className="mr-4">
+								<HashtagIcon width={24} height={24} fill={colors.accent} />
+							</View>
+							<Text className="text-caption font-semibold">4th Year</Text>
+						</View>
+						{/* Status */}
+						<View className="flex-row items-center">
+							<View className="mr-4">
+								<CircleIcon width={24} height={24} fill={colors.accent} />
+							</View>
+							<Text className="text-caption font-semibold">
+								Open to Study Groups, Clubs
+							</Text>
+						</View>
+					</View>
 
-                    {/* Social Links */}
-                    <View className="flex-col items-center mx-2 justify-center gap-4">
-                        <InstaIcon width={24} height={24} fill={colors.textAccent} className="shadow-lg"/>
-                        <LinkedInIcon width={24} height={24} fill={colors.textAccent} className="shadow-lg"/>
-                        <TwitterIcon width={24} height={24} fill={colors.textAccent} className="shadow-lg"/>
-                        <DiscordIcon width={24} height={24} fill={colors.textAccent} className="shadow-lg"/>
-                    </View>
-                </View>
+					{/* Social Links */}
+					<View className="flex-col items-center mx-2 justify-center gap-4">
+						<InstaIcon
+							width={24}
+							height={24}
+							fill={colors.textAccent}
+							className="shadow-lg"
+						/>
+						<LinkedInIcon
+							width={24}
+							height={24}
+							fill={colors.textAccent}
+							className="shadow-lg"
+						/>
+						<TwitterIcon
+							width={24}
+							height={24}
+							fill={colors.textAccent}
+							className="shadow-lg"
+						/>
+						<DiscordIcon
+							width={24}
+							height={24}
+							fill={colors.textAccent}
+							className="shadow-lg"
+						/>
+					</View>
+				</View>
+				<View style={{ width: "100%", paddingHorizontal: 24, paddingTop: 24 }}>
+					<Pressable onPress={handleLogout} className="bg-red-100 rounded p-3">
+						<Text className="text-red-600 text-center">Log out</Text>
+					</Pressable>
+				</View>
 			</View>
 		</ScrollView>
 	);

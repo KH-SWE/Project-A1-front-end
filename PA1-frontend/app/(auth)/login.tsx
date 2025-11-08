@@ -12,6 +12,7 @@ import {
 import LottieView from "lottie-react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/components/AuthProvider";
+import { api } from "../lib/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { height } = Dimensions.get("window");
@@ -22,6 +23,7 @@ export default function LoginScreen() {
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [loading, setLoading] = useState(false);
 	const { login } = useAuth();
 	const router = useRouter();
 
@@ -36,10 +38,37 @@ export default function LoginScreen() {
 			return;
 		}
 
-		// TODO: replace with real authentication call
-		const uid = email.trim();
-		await login(uid);
-		router.replace("/(tabs)/home" as any);
+		setLoading(true);
+		try {
+			// NOTE: when testing on a physical device using Expo Go, replace API_BASE in app/lib/api.ts
+			// with your machine LAN IP (e.g. http://192.168.1.10:3000) so the device can reach your backend.
+			const res = await api.post('/api/auth/login', { email: email.trim(), password });
+			const data = res.data || {};
+			// backend returns { user: { id, username, email }, accessToken, refreshToken }
+			const rawId = data?.user?.id ?? data?.userId ?? data?.id;
+			let uid: number | string | undefined = undefined;
+			if (typeof rawId === 'number') {
+				uid = rawId;
+			} else if (typeof rawId === 'string' && rawId.trim() !== '') {
+				const parsed = Number(rawId);
+				if (Number.isFinite(parsed)) uid = parsed;
+			}
+			if (uid === undefined) {
+				console.warn('login: server did not return numeric user id', data);
+				Alert.alert('Login error', 'Server did not return a valid user id.');
+				return;
+			}
+
+			// pass tokens (if returned) to AuthProvider so they are persisted
+			await login(uid, { accessToken: data.accessToken, refreshToken: data.refreshToken });
+			router.replace("/(tabs)/home" as any);
+		} catch (err: any) {
+			console.warn('login error', err);
+			const message = err?.response?.data?.message || err.message || 'Login failed';
+			Alert.alert('Login error', message);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -119,6 +148,7 @@ export default function LoginScreen() {
 				>
 					<Pressable
 						onPress={submit}
+						disabled={loading}
 						className="bg-secondary px-6 py-5 rounded-3xl mb-3 w-11/12 items-center"
 						style={{
 							shadowColor: "#000",
@@ -126,9 +156,10 @@ export default function LoginScreen() {
 							shadowOpacity: 0.25,
 							shadowRadius: 6,
 							elevation: 6,
+							opacity: loading ? 0.6 : 1,
 						}}
 					>
-						<Text className="text-black font-inter-bold text-center">continue</Text>
+						<Text className="text-black font-inter-bold text-center">{loading ? 'loading...' : 'continue'}</Text>
 					</Pressable>
 
 					<Pressable
