@@ -166,7 +166,7 @@ export default function LoginScreen() {
 						onPress={() => router.back()}
 						className="px-6 py-5 rounded-3xl w-11/12 items-center"
 					>
-						<Text className="text-black font-inter-bold text-center">go back</Text>
+						<Text className="text-black font-inter-regular text-center underline">back</Text>
 					</Pressable>
 				</View>
 			</View>

@@ -11,8 +11,8 @@ import {
 	TouchableWithoutFeedback,
 	KeyboardAvoidingView,
 	Platform,
- 	Modal,
- 	UIManager,
+	Modal,
+	UIManager,
 	findNodeHandle,
 } from "react-native";
 import LottieView from "lottie-react-native";
@@ -21,8 +21,6 @@ import { useAuth } from "@/components/AuthProvider";
 import { api } from "../lib/api";
 import { saveTokens } from "../lib/token";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-// dimensions not needed here; using safe-area insets instead
 
 // Shared input component moved to module scope to avoid remounting on every render
 const COMMON_INPUT_CLASS = 'bg-white px-6 py-5 rounded-3xl font-inter-regular mb-3 w-11/12';
@@ -39,12 +37,10 @@ const styles = StyleSheet.create({
 
 const InputField: React.FC<any> = ({ className, style, ...props }) => {
 	const mergedClass = className ? `${COMMON_INPUT_CLASS} ${className}` : COMMON_INPUT_CLASS;
-	// prevent automatic blur on submit by default (helps prevent keyboard flicker)
 	const extraProps = { blurOnSubmit: props.blurOnSubmit ?? false };
 	return <TextInput {...props} {...extraProps} className={mergedClass} style={[styles.inputShadow, style]} />;
 };
 
-// Small dropdown component implemented with Modal (no external deps)
 const Dropdown: React.FC<{
 	options: any[];
 	selected?: any;
@@ -57,27 +53,60 @@ const Dropdown: React.FC<{
 
 	return (
 		<>
-			<Pressable onPress={() => setOpen(true)} className={`w-11/12 p-3 rounded mb-2 bg-white`} style={styles.inputShadow}>
-				<Text>{label}</Text>
+			<Pressable onPress={() => setOpen(true)} className={COMMON_INPUT_CLASS} style={styles.inputShadow}>
+				<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+					<Text style={{ color: selected ? '#111' : '#666' }}>{label}</Text>
+					<Text style={{ color: '#999' }}>▾</Text>
+				</View>
 			</Pressable>
 
-			<Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
+			<Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
 				<TouchableWithoutFeedback onPress={() => setOpen(false)}>
 					<View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', justifyContent: 'flex-end' }}>
-						<View style={{ backgroundColor: '#fff', paddingVertical: 12, paddingHorizontal: 10, borderTopLeftRadius: 12, borderTopRightRadius: 12, maxHeight: '60%' }}>
+						<View style={{ backgroundColor: '#fff', paddingVertical: 8, paddingHorizontal: 10, borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '60%' }}>
+							{/* header */}
+							<View style={{ alignItems: 'center', paddingVertical: 6 }}>
+								<View style={{ width: 40, height: 4, backgroundColor: '#e5e7eb', borderRadius: 4 }} />
+							</View>
 							<ScrollView>
 								{options.map((opt: any) => {
 									const key = opt.id ?? opt.enumlabel ?? JSON.stringify(opt);
 									const text = getLabel ? getLabel(opt) : (opt.major_name ?? opt.faculty_name ?? opt.name ?? opt.enumlabel ?? String(opt));
+									// robust equality: prefer id (numeric/object), then enumlabel (enum items), then strict equality for primitives
+									let isSelected = false;
+									if (selected != null) {
+										// both objects with id
+										if (typeof selected === 'object' && typeof opt === 'object') {
+											if (selected.id != null && opt.id != null) {
+												isSelected = selected.id === opt.id;
+											} else if (selected.enumlabel != null && opt.enumlabel != null) {
+												isSelected = selected.enumlabel === opt.enumlabel;
+											} else {
+												// fallback: compare a few likely name fields
+												const selName = selected.major_name ?? selected.faculty_name ?? selected.name;
+												const optName = opt.major_name ?? opt.faculty_name ?? opt.name;
+												if (selName != null && optName != null) {
+													isSelected = String(selName) === String(optName);
+												}
+											}
+										} else {
+											// primitives (string/number) compare directly or against opt's enumlabel/name
+											if (selected === opt) isSelected = true;
+											else if (typeof opt === 'object') {
+												isSelected = selected === opt.enumlabel || selected === opt.major_name || selected === opt.faculty_name || selected === opt.name;
+											}
+										}
+									}
+
 									return (
-										<Pressable key={key} onPress={() => { onSelect(opt); setOpen(false); }} className="p-3 border-b">
-											<Text>{text}</Text>
+										<Pressable key={key} onPress={() => { onSelect(opt); setOpen(false); }} style={{ paddingVertical: 14, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#f3f4f6', backgroundColor: '#fff' }}>
+											<Text style={{ color: '#111', fontWeight: isSelected ? '700' as any : '400' as any }}>{text}</Text>
 										</Pressable>
 									);
 								})}
 							</ScrollView>
-							<Pressable onPress={() => setOpen(false)} className="p-3 items-center">
-								<Text className="text-caption">Cancel</Text>
+							<Pressable onPress={() => setOpen(false)} style={{ padding: 12, alignItems: 'center' }}>
+								<Text style={{ color: '#6b7280' }}>Cancel</Text>
 							</Pressable>
 						</View>
 					</View>
@@ -96,7 +125,7 @@ export default function SignupScreen() {
 	const { login } = useAuth();
 	const router = useRouter();
 
-	// step: 0 = register, 1 = socials/bio, 2 = academics
+	// step: 0 = register, 1 = academics
 	const [step, setStep] = useState<number>(0);
 
 	// registration fields
@@ -108,13 +137,7 @@ export default function SignupScreen() {
 	// saved after register (do NOT call AuthProvider.login yet)
 	// (no server-side user created until final submit)
 
-	// profile/socials
-	const [bio, setBio] = useState("");
-	const [avatarUrl, setAvatarUrl] = useState(""); // placeholder
-	const [twitterUrl, setTwitterUrl] = useState("");
-	const [instagramUrl, setInstagramUrl] = useState("");
-	const [discordUrl, setDiscordUrl] = useState("");
-	const [linkedinUrl, setLinkedinUrl] = useState("");
+	// we removed the socials step; socials/bio will be empty strings by default
 
 	// academics
 	const [majors, setMajors] = useState<any[]>([]);
@@ -124,7 +147,7 @@ export default function SignupScreen() {
 
 	const [majorId, setMajorId] = useState<number | null>(null);
 	const [facultyId, setFacultyId] = useState<number | null>(null);
-	const [studyYear, setStudyYear] = useState("");
+	const [studyYear, setStudyYear] = useState("1");
 	const [studyStatus, setStudyStatus] = useState<string | null>(null);
 	const [clubStatus, setClubStatus] = useState<string | null>(null);
 
@@ -204,12 +227,12 @@ export default function SignupScreen() {
 					username: username.trim(),
 					email: email.trim(),
 					password,
-					bio,
-					avatarUrl: avatarUrl || "",
-					twitterUrl,
-					instagramUrl,
-					discordUrl,
-					linkedinUrl,
+					bio: "",
+					avatarUrl: "",
+					twitterUrl: "",
+					instagramUrl: "",
+					discordUrl: "",
+					linkedinUrl: "",
 					// send names instead of numeric ids per API requirement
 					major: selectedMajor?.major_name ?? selectedMajor?.name ?? null,
 					faculty: selectedFaculty?.faculty_name ?? selectedFaculty?.name ?? null,
@@ -248,16 +271,6 @@ export default function SignupScreen() {
 		};
 
 	// helper navigation / skips
-	const handleSkipSocials = () => {
-		setBio("");
-		setAvatarUrl("");
-		setTwitterUrl("");
-		setInstagramUrl("");
-		setDiscordUrl("");
-		setLinkedinUrl("");
-		setStep(2);
-	};
-
 	const handleSkipAcademics = async () => {
 		await submitProfile();
 	};
@@ -268,7 +281,8 @@ export default function SignupScreen() {
 	};
 
 	useEffect(() => {
-		if (step !== 2) return;
+		// load academics dropdowns when we reach the academics step
+		if (step !== 1) return;
 		(async () => {
 			try {
 				const [majRes, facRes, studyRes, clubRes] = await Promise.all([
@@ -317,7 +331,7 @@ export default function SignupScreen() {
 					<Text className="text-5xl font-inter-light">sign up</Text>
 				</View>
 
-				<View style={{ flex: 0.55 }}>
+				<View style={{ flex: 1 }}>
 					<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={keyboardVerticalOffset} style={{ flex: 1 }}>
 						<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
 							<ScrollView
@@ -325,8 +339,9 @@ export default function SignupScreen() {
 									width: "100%",
 									alignItems: "center",
 									paddingTop: 8,
-									// leave extra bottom padding so inputs can scroll above fixed buttons
-									paddingBottom: 220,
+									// leave extra bottom padding so inputs and long option lists can scroll above buttons
+									paddingBottom: insets.bottom + 260,
+									flexGrow: 1,
 								}}
 								keyboardShouldPersistTaps="handled"
 								ref={(r) => { scrollRef.current = r; }}
@@ -369,59 +384,10 @@ export default function SignupScreen() {
 							</>
 						)}
 
+						{/* socials step removed - we go straight from credentials to academics */}
+
 						{step === 1 && (
 							<>
-								<InputField
-									value={bio}
-									onChangeText={setBio}
-									placeholder="short bio"
-									multiline
-									numberOfLines={3}
-									className="rounded-2xl"
-									style={{ opacity: loading ? 0.6 : 1 }}
-									onFocus={handleFocus}
-								/>
-								{/* avatar placeholder */}
-								<View className="w-11/12 mb-3 items-center">
-									<Text className="text-caption mb-2">
-										Avatar (placeholder)
-									</Text>
-									<View className="w-24 h-24 bg-gray-200 rounded-full mb-2" />
-								</View>
-								<InputField
-									value={twitterUrl}
-									onChangeText={setTwitterUrl}
-									placeholder="twitter url"
-									style={{ opacity: loading ? 0.6 : 1 }}
-									onFocus={handleFocus}
-								/>
-								<InputField
-									value={instagramUrl}
-									onChangeText={setInstagramUrl}
-									placeholder="instagram url"
-									style={{ opacity: loading ? 0.6 : 1 }}
-									onFocus={handleFocus}
-								/>
-								<InputField
-									value={discordUrl}
-									onChangeText={setDiscordUrl}
-									placeholder="discord url"
-									style={{ opacity: loading ? 0.6 : 1 }}
-									onFocus={handleFocus}
-								/>
-								<InputField
-									value={linkedinUrl}
-									onChangeText={setLinkedinUrl}
-									placeholder="linkedin url"
-									style={{ opacity: loading ? 0.6 : 1 }}
-									onFocus={handleFocus}
-								/>
-							</>
-						)}
-
-						{step === 2 && (
-							<>
-								<Text className="text-button mb-2">Select major</Text>
 								{/* simple list selection */}
 								{majors.length === 0 ? (
 									<Text className="text-caption">Loading majors...</Text>
@@ -431,53 +397,81 @@ export default function SignupScreen() {
 										selected={majors.find((mm: any) => mm.id === majorId)}
 										onSelect={(item: any) => { setMajorId(item.id); setFacultyId(item.faculty_id ?? item.facultyId ?? null); }}
 										getLabel={(it: any) => it.major_name ?? it.name}
-										placeholder="Select major"
+										placeholder="select major"
 									/>
 								)}
 
-								<Text className="text-button mt-4 mb-2">Select faculty</Text>
 								{faculties.length === 0 ? (
-									<Text className="text-caption">Loading faculties...</Text>
+									<Text className="text-caption">loading faculties...</Text>
 								) : (
 									<Dropdown
 										options={faculties}
 										selected={faculties.find((ff: any) => ff.id === facultyId)}
 										onSelect={(item: any) => setFacultyId(item.id)}
 										getLabel={(it: any) => it.faculty_name ?? it.name}
-										placeholder="Select faculty"
+										placeholder="select faculty"
 									/>
 								)}
 
-								<InputField
-									value={studyYear}
-									onChangeText={setStudyYear}
-									placeholder="study year (e.g. 4)"
-									onFocus={handleFocus}
-								/>
+								{/* study year stepper (label integrated into control for a cleaner layout) */}
+								<View className="w-11/12 mb-3 rounded-3xl" style={[styles.inputShadow, { backgroundColor: '#fff', paddingVertical: 10, paddingHorizontal: 12 }]}> 
+									<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+										{/* label on the left to avoid feeling squeezed */}
+										<View style={{ flex: 1 }}>
+											<Text className="mx-2" style={{ color: '#666'}}>year of study</Text>
+										</View>
+										{/* controls on the right */}
+										<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+											<Pressable
+												onPress={() => {
+												const cur = parseInt(studyYear || '0', 10) || 0;
+												const next = Math.max(1, cur - 1);
+												setStudyYear(String(next));
+											}}
+											className="px-4 py-2 rounded-2xl"
+											style={{ backgroundColor: '#f3f4f6', marginRight: 8 }}
+										>
+											<Text style={{ fontSize: 20 }}>−</Text>
+										</Pressable>
+											<View style={{ minWidth: 28, alignItems: 'center' }}>
+												<Text style={{ fontSize: 16, color: '#111' }}>{studyYear || '1'}</Text>
+											</View>
+											<Pressable
+												onPress={() => {
+												const cur = parseInt(studyYear || '0', 10) || 0;
+												const next = Math.min(10, cur + 1);
+												setStudyYear(String(next));
+											}}
+											className="px-4 py-2 rounded-2xl"
+											style={{ backgroundColor: '#f3f4f6', marginLeft: 8 }}
+										>
+											<Text style={{ fontSize: 20 }}>+</Text>
+										</Pressable>
+										</View>
+									</View>
+								</View>
 
-								<Text className="text-button mt-4 mb-2">Study status</Text>
 								{studyEnum.length === 0 ? (
-									<Text className="text-caption">Loading...</Text>
+									<Text className="text-caption">loading...</Text>
 								) : (
 									<Dropdown
 										options={studyEnum}
 										selected={studyEnum.find((x: any) => x.enumlabel === studyStatus)}
 										onSelect={(item: any) => setStudyStatus(item.enumlabel)}
 										getLabel={(it: any) => it.enumlabel}
-										placeholder="Select study status"
+										placeholder="select study status"
 									/>
 								)}
 
-								<Text className="text-button mt-4 mb-2">Club status</Text>
 								{clubEnum.length === 0 ? (
-									<Text className="text-caption">Loading...</Text>
+									<Text className="text-caption">loading...</Text>
 								) : (
 									<Dropdown
 										options={clubEnum}
 										selected={clubEnum.find((x: any) => x.enumlabel === clubStatus)}
 										onSelect={(item: any) => setClubStatus(item.enumlabel)}
 										getLabel={(it: any) => it.enumlabel}
-										placeholder="Select club status"
+										placeholder="select club status"
 									/>
 								)}
 							</>
@@ -505,32 +499,9 @@ export default function SignupScreen() {
 								</Pressable>
 							)}
 
-							{step === 1 && (
-								<>
-									<Pressable
-										onPress={() => setStep(2)}
-										className="bg-secondary px-6 py-5 rounded-3xl mb-3 w-11/12 items-center"
-										style={{
-											shadowColor: "#000",
-											shadowOffset: { width: 0, height: 4 },
-											shadowOpacity: 0.25,
-											shadowRadius: 6,
-											elevation: 6,
-											opacity: loading ? 0.6 : 1,
-										}}
-									>
-										<Text className="text-black font-inter-bold">continue</Text>
-									</Pressable>
-									<Pressable
-										onPress={handleSkipSocials}
-										className="px-6 py-4 rounded-3xl w-11/12 items-center"
-									>
-										<Text className="text-black">skip</Text>
-									</Pressable>
-								</>
-							)}
+                            
 
-							{step === 2 && (
+							{step === 1 && (
 								<>
 									<Pressable
 										onPress={submitProfile}
@@ -551,9 +522,17 @@ export default function SignupScreen() {
 									</Pressable>
 									<Pressable
 										onPress={handleSkipAcademics}
-										className="px-6 py-4 rounded-3xl w-11/12 items-center"
+										className="bg-white px-6 py-5 rounded-3xl mb-3 w-11/12 items-center"
+										style={{
+											shadowColor: "#000",
+											shadowOffset: { width: 0, height: 4 },
+											shadowOpacity: 0.25,
+											shadowRadius: 6,
+											elevation: 6,
+											opacity: loading ? 0.6 : 1,
+										}}
 									>
-										<Text className="text-black">skip</Text>
+										<Text className="text-black font-inter-bold">skip</Text>
 									</Pressable>
 								</>
 							)}
@@ -563,7 +542,7 @@ export default function SignupScreen() {
 								onPress={goBack}
 								className="px-6 py-4 rounded-3xl w-11/12 items-center"
 							>
-								<Text className="text-black">back</Text>
+								<Text className="text-black font-inter-regular underline">back</Text>
 							</Pressable>
 						</View>
 

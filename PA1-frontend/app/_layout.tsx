@@ -9,7 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import React, { useEffect } from "react";
 
-import { Text, TextInput } from "react-native";
+import { Text, TextInput, View, ActivityIndicator } from "react-native";
 import {
 	useFonts,
 	Inter_300Light,
@@ -22,7 +22,7 @@ import {
 } from "@expo-google-fonts/inter";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { AuthProvider, useAuth } from "@/components/AuthProvider";
-import { View, ActivityIndicator } from "react-native";
+// (View and ActivityIndicator are imported above together with Text/TextInput)
 
 // Import global CSS - this must be imported to enable NativeWind
 
