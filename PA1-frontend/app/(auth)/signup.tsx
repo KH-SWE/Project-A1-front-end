@@ -371,7 +371,7 @@ export default function SignupScreen() {
 
 			// finish signup: login and enter app
 			await login(Number(newUserId), tokens);
-			router.replace("/(tabs)/home" as any);
+			router.replace("/(tabs)/community" as any);
 		} catch (err: any) {
 			console.warn("final registration failed", err);
 			const message =

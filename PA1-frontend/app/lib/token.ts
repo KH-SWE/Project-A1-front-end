@@ -16,13 +16,18 @@ export async function saveTokens(accessToken: string, refreshToken: string) {
 /* Retrieves the access token from AsyncStorage.
  */
 export async function getAccessToken() {
-  return AsyncStorage.getItem(ACCESS_KEY);
+  const t = await AsyncStorage.getItem(ACCESS_KEY);
+  // normalize empty-string to null so callers can detect absence
+  if (t == null) return null;
+  return t.length > 0 ? t : null;
 }
 
 /* Retrieves the refresh token from AsyncStorage.
  */
 export async function getRefreshToken() {
-  return AsyncStorage.getItem(REFRESH_KEY);
+  const t = await AsyncStorage.getItem(REFRESH_KEY);
+  if (t == null) return null;
+  return t.length > 0 ? t : null;
 }
 
 /* Clears both tokens from AsyncStorage.

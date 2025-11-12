@@ -13,10 +13,11 @@ export default function TabsLayout() {
           href: null, // This hides the tab from the tab bar
         }} 
       />
-      <Tabs.Screen name="home" options={{ title: "Home" }} />
-      <Tabs.Screen name="clubs" options={{ title: "Clubs" }} />
-      <Tabs.Screen name="spaces" options={{ title: "Spaces" }} />
-      <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+  <Tabs.Screen name="community" options={{ title: "Community" }} />
+  <Tabs.Screen name="spaces" options={{ title: "Spaces" }} />
+  <Tabs.Screen name="search" options={{ title: "Search" }} />
+  <Tabs.Screen name="resources" options={{ title: "Resources" }} />
+  <Tabs.Screen name="profile" options={{ title: "Profile" }} />
     </Tabs>
   );
 }

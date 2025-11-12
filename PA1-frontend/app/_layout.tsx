@@ -36,7 +36,7 @@ function RootController() {
 
 	useEffect(() => {
 		if (loading) return;
-		if (userId) router.replace("/(tabs)/home" as any);
+		if (userId) router.replace("/(tabs)/community" as any);
 		else router.replace("/welcome" as any);
 	}, [userId, loading, router]);
 

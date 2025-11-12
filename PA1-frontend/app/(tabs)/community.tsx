@@ -1,7 +1,8 @@
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function SpacesScreen() {
+
+export default function CommunityScreen() {
 	const insets = useSafeAreaInsets();
 	return (
 		<ScrollView
@@ -14,7 +15,7 @@ export default function SpacesScreen() {
 		>
 			{/* Title */}
 			<View style={{ marginBottom: 12 }}>
-				<Text className="text-4xl text-left font-inter-black">spaces</Text>
+				<Text className="text-4xl text-left font-inter-black">community</Text>
 			</View>
 			<View style={{ height: insets.bottom }} />
 		</ScrollView>

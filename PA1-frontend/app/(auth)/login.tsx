@@ -61,7 +61,7 @@ export default function LoginScreen() {
 
 			// pass tokens (if returned) to AuthProvider so they are persisted
 			await login(uid, { accessToken: data.accessToken, refreshToken: data.refreshToken });
-			router.replace("/(tabs)/home" as any);
+			router.replace("/(tabs)/community" as any);
 		} catch (err: any) {
 			console.warn('login error', err);
 			const message = err?.response?.data?.message || err.message || 'Login failed';
