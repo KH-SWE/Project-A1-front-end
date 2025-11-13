@@ -91,7 +91,6 @@ function CategoryPillBar({ categories, selectedCategory, onSelectCategory }: Pil
 
       <View style={{ flexDirection: 'row', height: tabHeight }}>
         {categories.map((cat) => {
-          const isFocused = cat === (selectedCategory ?? categories[0]);
           return (
             <Pressable key={cat} onPress={() => onSelectCategory(cat)} style={{ width: tabWidth, height: tabHeight, justifyContent: 'center', alignItems: 'center' }}>
               <Text style={{ color: '#000', textAlign: 'center' }} className="font-inter-bold text-sm lowercase">{cat}</Text>

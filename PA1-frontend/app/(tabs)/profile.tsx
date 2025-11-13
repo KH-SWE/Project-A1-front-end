@@ -23,6 +23,7 @@ import { getRefreshToken } from "../lib/token";
 import TopProfileHeader from "@/components/TopProfileHeader";
 import AcademicsCard from "@/components/AcademicsCard";
 import SocialRow from "@/components/SocialRow";
+import { pickAndUploadAvatar } from "../lib/uploads/pickAndUploadAvatar";
 
 export default function ProfileScreen() {
   const { logout, userId } = useAuth();
@@ -40,6 +41,27 @@ export default function ProfileScreen() {
   const [studyEnum, setStudyEnum] = useState<any[]>([]);
   const [clubEnum, setClubEnum] = useState<any[]>([]);
   const [openDropdown, setOpenDropdown] = useState<null | "major" | "faculty" | "study" | "club">(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [pendingAvatarUpload, setPendingAvatarUpload] = useState(false);
+
+  const handleAvatarChange = async () => {
+    if (!userId) return Alert.alert("Upload avatar", "No user id available");
+    try {
+      setUploadingAvatar(true);
+      const newUrl = await pickAndUploadAvatar(Number(userId));
+      if (newUrl) {
+        // update preview and mark that an avatar was uploaded (pending save)
+        setProfile((p: any) => p ? { ...p, avatar_url: newUrl } : p);
+        setForm((f: any) => ({ ...f, avatarUrl: newUrl }));
+        setPendingAvatarUpload(true);
+      }
+    } catch (e) {
+      console.warn("avatar upload failed", e);
+      Alert.alert("Upload avatar", "Failed to upload avatar");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   useEffect(() => {
     if (!userId) return;
@@ -140,6 +162,7 @@ export default function ProfileScreen() {
     });
     setUsernameAvailable(null);
     setEditing(true);
+  setPendingAvatarUpload(false);
 
     (async () => {
       try {
@@ -179,7 +202,7 @@ export default function ProfileScreen() {
 
   const handleSave = async () => {
     if (!userId) return Alert.alert("Error", "No user id");
-    if (!formChanged) {
+    if (!formChanged && !pendingAvatarUpload) {
       Alert.alert("No changes", "You haven't made any changes to save.");
       return;
     }
@@ -209,6 +232,7 @@ export default function ProfileScreen() {
       const res = await api.patch(`/api/users/update/${userId}`, payload);
       setProfile(res?.data || { ...profile, ...payload });
       setEditing(false);
+      setPendingAvatarUpload(false);
       Alert.alert("Profile", "Profile updated");
     } catch (e) {
       console.warn("profile update failed", e);
@@ -217,6 +241,8 @@ export default function ProfileScreen() {
       setSaving(false);
     }
   };
+
+  const canSave = formChanged || pendingAvatarUpload;
 
   const displayName = [profile?.firstName ?? profile?.first_name, profile?.lastName ?? profile?.last_name]
     .filter(Boolean)
@@ -243,7 +269,7 @@ export default function ProfileScreen() {
         gap: 8,
       }}
     >
-      <TopProfileHeader avatarUrl={avatarUrl} displayName={displayName} handle={handle} userId={userId} onEdit={openEdit} />
+  <TopProfileHeader avatarUrl={avatarUrl} displayName={displayName} handle={handle} userId={userId} onEdit={openEdit} onAvatarPress={handleAvatarChange} uploading={uploadingAvatar} />
 
       <View style={{ paddingHorizontal: 12, paddingBottom: 8 }} className="w-full max-w-lg">
         <Text className="text-sm font-inter text-textOnBgLight">{bioText}</Text>
@@ -274,18 +300,31 @@ export default function ProfileScreen() {
             ) : null}
 
             {/* First + Last name */}
+            <Text style={{ fontFamily: "Inter", marginBottom: 6 }}>Name</Text>
             <View style={{ flexDirection: "row", gap: 8, marginBottom: 12 }}>
               <TextInput value={form.firstName} onChangeText={(t) => setForm((p: any) => ({ ...p, firstName: t }))} placeholder="First name" style={{ flex: 1, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 8, padding: 8 }} />
               <TextInput value={form.lastName} onChangeText={(t) => setForm((p: any) => ({ ...p, lastName: t }))} placeholder="Last name" style={{ flex: 1, borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 8, padding: 8 }} />
             </View>
 
+            {/* Avatar (picker only) */}
+            {/* Avatar preview + change button */}
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+              <Image source={form.avatarUrl ? { uri: String(form.avatarUrl) } : (avatarUrl ? { uri: String(avatarUrl) } : MascotHero)} style={{ width: 64, height: 64, borderRadius: 12, marginRight: 12, backgroundColor: "#f3f4f6" }} />
+              <View style={{ flex: 1 }}>
+                <Pressable onPress={handleAvatarChange} style={{ paddingVertical: 10, paddingHorizontal: 14, backgroundColor: "#fff", borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 10, alignItems: "center" }}>
+                  {uploadingAvatar ? (
+                    <ActivityIndicator />
+                  ) : (
+                    <Text style={{ fontFamily: "Inter", color: "#111" }}>Change avatar</Text>
+                  )}
+                </Pressable>
+                <Text style={{ fontFamily: "Inter", color: "#6b7280", marginTop: 8, fontSize: 12 }}>Tap Change avatar to pick a photo.</Text>
+              </View>
+            </View>
+
             {/* Bio */}
             <Text style={{ fontFamily: "Inter", marginBottom: 6 }}>Bio</Text>
             <TextInput value={form.bio} onChangeText={(t) => setForm((p: any) => ({ ...p, bio: t }))} placeholder="A short bio" multiline style={{ borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 8, padding: 8, minHeight: 80, textAlignVertical: "top", marginBottom: 12 }} />
-
-            {/* Avatar URL */}
-            <Text style={{ fontFamily: "Inter", marginBottom: 6 }}>Avatar URL</Text>
-            <TextInput value={form.avatarUrl} onChangeText={(t) => setForm((p: any) => ({ ...p, avatarUrl: t }))} placeholder="https://..." style={{ borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 8, padding: 8, marginBottom: 12 }} />
 
             {/* Socials */}
             <Text style={{ fontFamily: "Inter", marginBottom: 6 }}>Instagram</Text>
@@ -341,8 +380,8 @@ export default function ProfileScreen() {
               <Pressable onPress={() => setEditing(false)} style={{ width: "100%", backgroundColor: "#f3f4f6", borderRadius: 12, paddingVertical: 14, alignItems: "center", marginBottom: 12 }}>
                 <Text style={{ fontFamily: "Inter", color: "#374151", fontSize: 16 }}>Cancel</Text>
               </Pressable>
-              <Pressable onPress={handleSave} disabled={!formChanged || saving} style={{ width: "100%", backgroundColor: !formChanged || saving ? "#9ca3af" : "#FFE374", borderRadius: 12, paddingVertical: 14, alignItems: "center" }}>
-                {saving ? <ActivityIndicator color="#fff" /> : <Text style={{ fontFamily: "Inter", color: !formChanged || saving ? "#fff" : "#000000", fontSize: 16 }}>Save</Text>}
+              <Pressable onPress={handleSave} disabled={!canSave || saving || uploadingAvatar} style={{ width: "100%", backgroundColor: !canSave || saving || uploadingAvatar ? "#9ca3af" : "#FFE374", borderRadius: 12, paddingVertical: 14, alignItems: "center" }}>
+                {saving || uploadingAvatar ? <ActivityIndicator color="#fff" /> : <Text style={{ fontFamily: "Inter", color: !canSave || saving || uploadingAvatar ? "#fff" : "#000000", fontSize: 16 }}>Save</Text>}
               </Pressable>
             </View>
 
