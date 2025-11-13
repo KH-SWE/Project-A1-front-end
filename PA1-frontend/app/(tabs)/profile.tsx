@@ -26,6 +26,41 @@ import AcademicsCard from "@/components/AcademicsCard";
 import SocialRow from "@/components/SocialRow";
 import { pickAndUploadAvatar } from "../lib/uploads/pickAndUploadAvatar";
 
+// Try to extract S3 object key from a public S3/CloudFront URL.
+// Returns a key string suitable for DeleteObjectCommand (e.g. 'avatars/user-1.jpg') or null when unknown.
+function extractS3KeyFromUrl(rawUrl?: string | null): string | null {
+  if (!rawUrl) return null;
+  try {
+    const u = new URL(String(rawUrl));
+    let key = (u.pathname || "").replace(/^\//, "");
+
+    const host = u.hostname || "";
+    // virtual-hosted style: {bucket}.s3.amazonaws.com or {bucket}.s3.<region>.amazonaws.com
+    if (host.includes(".s3.")) {
+      return key || null;
+    }
+
+    // path-style: s3.amazonaws.com/{bucket}/{key}
+    if (host === "s3.amazonaws.com" || host.endsWith(".s3.amazonaws.com")) {
+      const parts = key.split("/");
+      if (parts.length >= 2) return parts.slice(1).join("/");
+      return key || null;
+    }
+
+    // amazonaws with region style e.g., s3.<region>.amazonaws.com
+    if (host.startsWith("s3.")) {
+      const parts = key.split("/");
+      if (parts.length >= 2) return parts.slice(1).join("/");
+      return key || null;
+    }
+
+    // If URL looks like a CloudFront or custom domain, best effort: return pathname (without leading slash)
+    return key || null;
+  } catch {
+    return null;
+  }
+}
+
 export default function ProfileScreen() {
   const { logout, userId } = useAuth();
   const router = useRouter();
@@ -228,6 +263,9 @@ export default function ProfileScreen() {
       const ok = await checkUsernameAvailability(form.username);
       if (!ok) return;
     }
+    // capture original avatar so we can delete the old object from S3 if save succeeds
+    const originalAvatar = profile?.avatar_url ?? "";
+
     setSaving(true);
     try {
       const payload = {
@@ -252,6 +290,22 @@ export default function ProfileScreen() {
       setEditing(false);
       setPendingAvatarUpload(false);
       Alert.alert("Profile", "Profile updated");
+      // If the avatar changed (replaced or removed), attempt to delete the previous file from S3
+      try {
+        const prev = String(originalAvatar || "").trim();
+        const next = String(payload.avatarUrl || "").trim();
+        if (prev && prev !== next) {
+          const fileKey = extractS3KeyFromUrl(prev);
+          if (fileKey) {
+            // backend expects DELETE with body { fileKey }
+            await api.delete("/api/upload/delete-file", { data: { fileKey } });
+          } else {
+            console.warn("could not determine S3 file key from url, skipping delete", prev);
+          }
+        }
+      } catch (err) {
+        console.warn("failed to delete previous avatar from bucket", err);
+      }
     } catch (e) {
       console.warn("profile update failed", e);
       Alert.alert("Profile", "Failed to update profile");
