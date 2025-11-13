@@ -2,13 +2,11 @@ import axios from "axios";
 import { getAccessToken, getRefreshToken, setAccessToken, clearTokens } from "./token";
 
 // 👇 set your local dev base URL (later replace with prod env var)
-const API_BASE_URL = "http://10.0.0.34:3000";
-
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 export const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
 });
-
 // attach access token on every request
 api.interceptors.request.use(async (config) => {
   const token = await getAccessToken();
