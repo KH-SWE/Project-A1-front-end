@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Image, Pressable, ActivityIndicator } from "react-native";
 import { colors } from "../constants/colors";
 import SettingsIcon from "@/assets/icons/settings-gear.svg";
+import DefaultAvatar from "@/assets/profile/default-avatar.png";
 
 type Props = {
   avatarUrl?: string | undefined;
@@ -30,7 +31,7 @@ export default function TopProfileHeader({
             {avatarUrl ? (
               <Image source={{ uri: avatarUrl }} style={{ width: 96, height: 96, borderRadius: 48 }} />
             ) : (
-              <View style={{ width: 96, height: 96, borderRadius: 48 }} className="bg-blue-500" />
+              <Image source={DefaultAvatar} style={{ width: 96, height: 96, borderRadius: 48 }} />
             )}
           </Pressable>
           {uploading ? (

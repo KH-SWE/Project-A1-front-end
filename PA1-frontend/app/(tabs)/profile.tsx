@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import MascotHero from "@/assets/mascot/mascot-hero.png";
+import DefaultAvatar from "@/assets/profile/default-avatar.png";
 
 import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "expo-router";
@@ -62,6 +63,22 @@ export default function ProfileScreen() {
     } finally {
       setUploadingAvatar(false);
     }
+  };
+
+  const handleRemoveAvatar = () => {
+    Alert.alert("Remove avatar", "Are you sure you want to remove your profile picture?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Remove",
+        style: "destructive",
+        onPress: () => {
+          // clear avatar in form and preview; mark pending so Save enables
+          setForm((f: any) => ({ ...f, avatarUrl: "" }));
+          setProfile((p: any) => (p ? { ...p, avatar_url: null } : p));
+          setPendingAvatarUpload(true);
+        },
+      },
+    ]);
   };
 
   useEffect(() => {
@@ -277,7 +294,7 @@ export default function ProfileScreen() {
             {avatarUrl ? (
               <Image source={{ uri: avatarUrl }} style={{ width: 320, height: 320, borderRadius: 12 }} />
             ) : (
-              <Image source={MascotHero} style={{ width: 320, height: 320, borderRadius: 12 }} />
+              <Image source={DefaultAvatar} style={{ width: 320, height: 320, borderRadius: 12 }} />
             )}
           </View>
         </Pressable>
@@ -322,7 +339,7 @@ export default function ProfileScreen() {
             {/* Avatar (picker only) */}
             {/* Avatar preview + change button */}
             <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
-              <Image source={form.avatarUrl ? { uri: String(form.avatarUrl) } : (avatarUrl ? { uri: String(avatarUrl) } : MascotHero)} style={{ width: 64, height: 64, borderRadius: 12, marginRight: 12, backgroundColor: "#f3f4f6" }} />
+              <Image source={form.avatarUrl ? { uri: String(form.avatarUrl) } : (avatarUrl ? { uri: String(avatarUrl) } : DefaultAvatar)} style={{ width: 64, height: 64, borderRadius: 12, marginRight: 12, backgroundColor: "#f3f4f6" }} />
               <View style={{ flex: 1 }}>
                 <Pressable onPress={handleAvatarChange} style={{ paddingVertical: 10, paddingHorizontal: 14, backgroundColor: "#fff", borderWidth: 1, borderColor: "#e5e7eb", borderRadius: 10, alignItems: "center" }}>
                   {uploadingAvatar ? (
@@ -332,6 +349,9 @@ export default function ProfileScreen() {
                   )}
                 </Pressable>
                 <Text style={{ fontFamily: "Inter", color: "#6b7280", marginTop: 8, fontSize: 12 }}>Tap Change avatar to pick a photo.</Text>
+                <Pressable onPress={handleRemoveAvatar} style={{ marginTop: 8, paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8, backgroundColor: '#fff', borderWidth: 1, borderColor: '#fee2e2', alignItems: 'center' }}>
+                  <Text style={{ fontFamily: 'Inter', color: '#b91c1c' }}>Remove avatar</Text>
+                </Pressable>
               </View>
             </View>
 
