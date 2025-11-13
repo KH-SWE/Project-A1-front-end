@@ -43,6 +43,7 @@ export default function ProfileScreen() {
   const [openDropdown, setOpenDropdown] = useState<null | "major" | "faculty" | "study" | "club">(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [pendingAvatarUpload, setPendingAvatarUpload] = useState(false);
+  const [avatarPreviewVisible, setAvatarPreviewVisible] = useState(false);
 
   const handleAvatarChange = async () => {
     if (!userId) return Alert.alert("Upload avatar", "No user id available");
@@ -269,7 +270,19 @@ export default function ProfileScreen() {
         gap: 8,
       }}
     >
-  <TopProfileHeader avatarUrl={avatarUrl} displayName={displayName} handle={handle} userId={userId} onEdit={openEdit} onAvatarPress={handleAvatarChange} uploading={uploadingAvatar} />
+      {/* Avatar preview modal (activated when tapping header avatar) */}
+      <Modal visible={avatarPreviewVisible} transparent animationType="fade" onRequestClose={() => setAvatarPreviewVisible(false)}>
+        <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center' }} onPress={() => setAvatarPreviewVisible(false)}>
+          <View style={{ padding: 12 }}>
+            {avatarUrl ? (
+              <Image source={{ uri: avatarUrl }} style={{ width: 320, height: 320, borderRadius: 12 }} />
+            ) : (
+              <Image source={MascotHero} style={{ width: 320, height: 320, borderRadius: 12 }} />
+            )}
+          </View>
+        </Pressable>
+      </Modal>
+  <TopProfileHeader avatarUrl={avatarUrl} displayName={displayName} handle={handle} userId={userId} onEdit={openEdit} onAvatarPress={() => setAvatarPreviewVisible(true)} uploading={uploadingAvatar} />
 
       <View style={{ paddingHorizontal: 12, paddingBottom: 8 }} className="w-full max-w-lg">
         <Text className="text-sm font-inter text-textOnBgLight">{bioText}</Text>
@@ -448,3 +461,5 @@ export default function ProfileScreen() {
     </ScrollView>
   );
 }
+
+// Avatar preview modal (outside main return so hooks/flow are clear)
