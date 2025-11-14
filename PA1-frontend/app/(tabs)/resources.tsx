@@ -8,6 +8,7 @@ import {
   Linking,
   Alert,
   useWindowDimensions,
+  RefreshControl,
 } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -109,35 +110,46 @@ export default function ResourcesScreen() {
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  useEffect(() => {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchResources = async () => {
     let mounted = true;
-    (async () => {
-      setLoading(true);
-      try {
-        const res = await api.get("/api/resources/");
-        if (!mounted) return;
-        const data: ResourceRow[] = Array.isArray(res?.data) ? res.data : [];
-        // sort by category name asc then id asc
-        data.sort((a, b) => {
-          const ca = (a.resource_category || "").localeCompare(b.resource_category || "");
-          if (ca !== 0) return ca;
-          return (a.id ?? 0) - (b.id ?? 0);
-        });
-        setResources(data);
-        // set initial selected category to first category (if any)
-        const firstCat = data.length > 0 ? data[0].resource_category : null;
-        setSelectedCategory(firstCat);
-      } catch (e: any) {
-        console.warn("failed to load resources", e);
-        setError(e?.response?.data?.error ?? e?.message ?? "Failed to load resources");
-      } finally {
-        setLoading(false);
-      }
-    })();
+    setLoading(true);
+    try {
+      const res = await api.get("/api/resources/");
+      if (!mounted) return;
+      const data: ResourceRow[] = Array.isArray(res?.data) ? res.data : [];
+      // sort by category name asc then id asc
+      data.sort((a, b) => {
+        const ca = (a.resource_category || "").localeCompare(b.resource_category || "");
+        if (ca !== 0) return ca;
+        return (a.id ?? 0) - (b.id ?? 0);
+      });
+      setResources(data);
+      // set initial selected category to first category (if any)
+      const firstCat = data.length > 0 ? data[0].resource_category : null;
+      setSelectedCategory(firstCat);
+      setError(null);
+    } catch (e: any) {
+      console.warn("failed to load resources", e);
+      setError(e?.response?.data?.error ?? e?.message ?? "Failed to load resources");
+    } finally {
+      setLoading(false);
+    }
     return () => {
       mounted = false;
     };
+  };
+
+  useEffect(() => {
+    fetchResources();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchResources();
+    setRefreshing(false);
+  };
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -177,6 +189,9 @@ export default function ResourcesScreen() {
         paddingBottom: 32,
         paddingHorizontal: 20,
       }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressViewOffset={8 + (insets.top || 0)} />
+      }
     >
       {/* Title */}
       <View style={{ marginBottom: 12 }}>

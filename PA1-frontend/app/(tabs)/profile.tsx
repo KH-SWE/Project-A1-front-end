@@ -10,6 +10,7 @@ import {
 	ActivityIndicator,
 	Modal,
 	TextInput,
+	RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -133,8 +134,10 @@ export default function ProfileScreen() {
 
 	useEffect(() => {
 		if (!userId) return;
+
 		let mounted = true;
-		(async () => {
+
+		const fetchProfile = async () => {
 			setLoading(true);
 			try {
 				const res = await api.get(`/api/users/id/${userId}`);
@@ -171,11 +174,27 @@ export default function ProfileScreen() {
 			} finally {
 				setLoading(false);
 			}
-		})();
+		};
+
+		fetchProfile();
+
 		return () => {
 			mounted = false;
 		};
 	}, [userId, logout, router]);
+
+	const [refreshing, setRefreshing] = useState(false);
+
+	const onRefresh = async () => {
+		setRefreshing(true);
+		try {
+			// re-run profile fetch
+			await api.get(`/api/users/id/${userId}`).then((res) => setProfile(res.data || null));
+		} catch (e) {
+			console.warn("refresh profile failed", e);
+		}
+		setRefreshing(false);
+	};
 
 	const formChanged = useMemo(() => {
 		const original: any = {
@@ -438,6 +457,7 @@ export default function ProfileScreen() {
 				alignItems: "center",
 				gap: 8,
 			}}
+			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressViewOffset={8 + (insets.top || 0)} />}
 		>
 			{/* Avatar preview modal (activated when tapping header avatar) */}
 			<Modal
