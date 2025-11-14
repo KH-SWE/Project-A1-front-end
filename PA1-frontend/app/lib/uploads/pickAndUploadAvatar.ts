@@ -1,10 +1,10 @@
 import * as ImagePicker from "expo-image-picker";
-import { uploadToS3, UploadFile } from "./uploadToS3";
+import { UploadFile } from "./uploadToS3";
 
-export async function pickAndUploadAvatar(userId: number): Promise<string | null> {
+// Picks an image from the library and returns a file descriptor suitable for upload.
+// NOTE: this does NOT upload to S3. Upload should occur on Save to avoid orphaned files.
+export async function pickAvatar(userId: number): Promise<UploadFile | null> {
   const result = await ImagePicker.launchImageLibraryAsync({
-    // mediaTypes option (MediaTypeOptions) is deprecated in newer expo-image-picker versions.
-    // Omitting it defaults to images on most platforms; keep other options explicit.
     allowsEditing: true,
     aspect: [1, 1],
     quality: 0.8,
@@ -20,12 +20,5 @@ export async function pickAndUploadAvatar(userId: number): Promise<string | null
     type: asset.mimeType ?? "image/jpeg",
   };
 
-  try {
-    // Upload to S3 and return the public URL.
-    const url = await uploadToS3(file, "avatars");
-    return url;
-  } catch (err) {
-    console.warn("pickAndUploadAvatar: upload failed", err);
-    throw err;
-  }
+  return file;
 }
