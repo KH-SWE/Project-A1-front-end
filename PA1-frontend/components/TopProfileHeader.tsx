@@ -3,6 +3,7 @@ import { View, Text, Image, Pressable, ActivityIndicator } from "react-native";
 import { colors } from "../constants/colors";
 import SettingsIcon from "@/assets/icons/settings-gear.svg";
 import DefaultAvatar from "@/assets/profile/default-avatar.png";
+import { shadows } from "@/constants/shadows";
 
 type Props = {
 	avatarUrl?: string | undefined;
@@ -35,15 +36,7 @@ export default function TopProfileHeader({
 						height: 96,
 						borderRadius: 48,
 						position: "relative",
-						shadowColor: "#000",
-						shadowOffset: { width: 0, height: 4 },
-						shadowOpacity: 0.25,
-						shadowRadius: 6,
-
-						// SHADOW for Android
-						elevation: 8,
-
-						backgroundColor: "#fff",
+						...shadows.medium,
 					}}
 				>
 					<Pressable

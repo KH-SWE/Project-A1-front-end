@@ -89,10 +89,16 @@ export default function ProfileScreen() {
 	const [uploadingAvatar, setUploadingAvatar] = useState(false);
 	const [pendingAvatarUpload, setPendingAvatarUpload] = useState(false);
 	const [avatarPreviewVisible, setAvatarPreviewVisible] = useState(false);
-	const [editOriginalAvatar, setEditOriginalAvatar] = useState<string | null>(null);
-	const [lastUploadedAvatarUrl, setLastUploadedAvatarUrl] = useState<string | null>(null);
+	const [editOriginalAvatar, setEditOriginalAvatar] = useState<string | null>(
+		null
+	);
+	const [lastUploadedAvatarUrl, setLastUploadedAvatarUrl] = useState<
+		string | null
+	>(null);
 
-	const [pendingAvatarFile, setPendingAvatarFile] = useState<UploadFile | null>(null);
+	const [pendingAvatarFile, setPendingAvatarFile] = useState<UploadFile | null>(
+		null
+	);
 
 	const handleAvatarChange = async () => {
 		if (!userId) return Alert.alert("Upload avatar", "No user id available");
@@ -154,16 +160,25 @@ export default function ProfileScreen() {
 
 				const looksLikeUserMissing =
 					status === 404 ||
-					(data && typeof data === "object" && /not found/i.test(JSON.stringify(data)));
+					(data &&
+						typeof data === "object" &&
+						/not found/i.test(JSON.stringify(data)));
 
-				const looksLikeAuthProblem = status === 401 || status === 403 ||
-					(data && typeof data === "object" && (data.error === "token_expired" || data.error === "invalid_token"));
+				const looksLikeAuthProblem =
+					status === 401 ||
+					status === 403 ||
+					(data &&
+						typeof data === "object" &&
+						(data.error === "token_expired" || data.error === "invalid_token"));
 
 				if (looksLikeUserMissing || looksLikeAuthProblem) {
 					try {
 						await logout();
 					} catch (logoutErr) {
-						console.warn("logout failed during profile load error handling", logoutErr);
+						console.warn(
+							"logout failed during profile load error handling",
+							logoutErr
+						);
 					}
 					// Replace navigation so user cannot go back into the app shell.
 					router.replace("/welcome" as any);
@@ -189,7 +204,9 @@ export default function ProfileScreen() {
 		setRefreshing(true);
 		try {
 			// re-run profile fetch
-			await api.get(`/api/users/id/${userId}`).then((res) => setProfile(res.data || null));
+			await api
+				.get(`/api/users/id/${userId}`)
+				.then((res) => setProfile(res.data || null));
 		} catch (e) {
 			console.warn("refresh profile failed", e);
 		}
@@ -331,31 +348,34 @@ export default function ProfileScreen() {
 		const originalAvatar = profile?.avatar_url ?? "";
 
 		setSaving(true);
-			try {
-				let uploadedUrl: string | null = null;
-				// If there's a pending file (picked but not uploaded), upload it now so we can include its URL in the payload
-				if (pendingAvatarFile) {
-					setUploadingAvatar(true);
-					try {
-						uploadedUrl = await uploadToS3(pendingAvatarFile, "avatars");
-						// set the payload avatar to the uploaded public URL
-						setForm((f: any) => ({ ...f, avatarUrl: uploadedUrl }));
-					} catch (uploadErr) {
-						console.warn("uploadToS3 failed during save", uploadErr);
-						Alert.alert("Upload avatar", "Failed to upload avatar. Save aborted.");
-						return;
-					} finally {
-						setUploadingAvatar(false);
-					}
+		try {
+			let uploadedUrl: string | null = null;
+			// If there's a pending file (picked but not uploaded), upload it now so we can include its URL in the payload
+			if (pendingAvatarFile) {
+				setUploadingAvatar(true);
+				try {
+					uploadedUrl = await uploadToS3(pendingAvatarFile, "avatars");
+					// set the payload avatar to the uploaded public URL
+					setForm((f: any) => ({ ...f, avatarUrl: uploadedUrl }));
+				} catch (uploadErr) {
+					console.warn("uploadToS3 failed during save", uploadErr);
+					Alert.alert(
+						"Upload avatar",
+						"Failed to upload avatar. Save aborted."
+					);
+					return;
+				} finally {
+					setUploadingAvatar(false);
 				}
+			}
 
-				const payload = {
+			const payload = {
 				username: form.username,
 				firstName: form.firstName,
 				lastName: form.lastName,
 				bio: form.bio,
-					// prefer uploadedUrl (if present), otherwise the form value
-					avatarUrl: uploadedUrl ?? form.avatarUrl,
+				// prefer uploadedUrl (if present), otherwise the form value
+				avatarUrl: uploadedUrl ?? form.avatarUrl,
 				twitterUrl: form.twitterUrl,
 				instagramUrl: form.instagramUrl,
 				discordUrl: form.discordUrl,
@@ -457,7 +477,13 @@ export default function ProfileScreen() {
 				alignItems: "center",
 				gap: 8,
 			}}
-			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} progressViewOffset={8 + (insets.top || 0)} />}
+			refreshControl={
+				<RefreshControl
+					refreshing={refreshing}
+					onRefresh={onRefresh}
+					progressViewOffset={8 + (insets.top || 0)}
+				/>
+			}
 		>
 			{/* Avatar preview modal (activated when tapping header avatar) */}
 			<Modal
@@ -953,34 +979,59 @@ export default function ProfileScreen() {
 										// an actual uploaded S3 URL recorded in `lastUploadedAvatarUrl`.
 										// This avoids trying to parse local file URIs or empty values.
 										if (pendingAvatarUpload && lastUploadedAvatarUrl) {
-											const current = String(lastUploadedAvatarUrl || "").trim();
+											const current = String(
+												lastUploadedAvatarUrl || ""
+											).trim();
 											const original = String(editOriginalAvatar || "").trim();
 											if (current && current !== original) {
 												const fileKey = extractS3KeyFromUrl(current);
 												if (fileKey) {
 													try {
-														await api.delete("/api/upload/delete-file", { data: { fileKey } });
+														await api.delete("/api/upload/delete-file", {
+															data: { fileKey },
+														});
 													} catch (delErr: any) {
-														console.warn("delete-file (DELETE) failed on cancel, attempting fallback POST", delErr?.response?.status, delErr?.response?.data || delErr.message || delErr);
+														console.warn(
+															"delete-file (DELETE) failed on cancel, attempting fallback POST",
+															delErr?.response?.status,
+															delErr?.response?.data || delErr.message || delErr
+														);
 														try {
-															await api.post("/api/upload/delete-file", { fileKey });
-															console.warn("delete-file (POST) fallback succeeded on cancel");
+															await api.post("/api/upload/delete-file", {
+																fileKey,
+															});
+															console.warn(
+																"delete-file (POST) fallback succeeded on cancel"
+															);
 														} catch (postErr: any) {
-															console.warn("delete-file (POST) fallback failed on cancel", postErr?.response?.status, postErr?.response?.data || postErr.message || postErr);
+															console.warn(
+																"delete-file (POST) fallback failed on cancel",
+																postErr?.response?.status,
+																postErr?.response?.data ||
+																	postErr.message ||
+																	postErr
+															);
 														}
-												}
+													}
 												} else {
-													console.warn("could not determine S3 key for uploaded temp avatar on cancel", current);
+													console.warn(
+														"could not determine S3 key for uploaded temp avatar on cancel",
+														current
+													);
 												}
 											}
 										}
 									} catch (e) {
-										console.warn("error while cleaning up uploaded avatar on cancel", e);
+										console.warn(
+											"error while cleaning up uploaded avatar on cancel",
+											e
+										);
 									} finally {
 										// revert any local changes and close editor
 										setForm({
 											username: profile?.username ?? "",
-											firstName: profile?.firstName ?? profile?.first_name ?? "",
+											firstName:
+												profile?.firstName ?? profile?.first_name ?? "",
 											lastName: profile?.lastName ?? profile?.last_name ?? "",
 											bio: profile?.bio ?? "",
 											avatarUrl: profile?.avatar_url ?? "",
