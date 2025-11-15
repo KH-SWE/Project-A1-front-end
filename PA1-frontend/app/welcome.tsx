@@ -53,9 +53,9 @@ export default function Welcome() {
 						}}
 					/>
 
-					<Text className="text-xl font-inter-regular mb-1">welcome to</Text>
+					<Text className="text-xl font-inter-regular mb-1">Welcome to</Text>
 					<Text className="text-6xl font-inter-black mb-4">
-						the ultimate UofC campus hub
+						The Ultimate UofC Campus Hub
 					</Text>
 				</View>
 
@@ -75,7 +75,7 @@ export default function Welcome() {
 							}}
 						>
 							<Text className="text-black font-inter-bold text-center">
-								sign up
+								Sign Up
 							</Text>
 						</Pressable>
 					</Link>
@@ -83,7 +83,7 @@ export default function Welcome() {
 					<Link href="/(auth)/login" asChild>
 						<Pressable className="px-6 py-5 rounded-3xl w-11/12 items-center">
 							<Text className="text-black font-inter-bold text-center">
-								log in
+								Log In
 							</Text>
 						</Pressable>
 					</Link>

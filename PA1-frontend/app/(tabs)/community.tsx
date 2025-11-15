@@ -109,22 +109,25 @@ function CategoryPillBar({
 				]}
 			/>
 
-			<View style={{ flexDirection: "row", height: tabHeight }}>
+						<View style={{ flexDirection: "row", height: tabHeight }}>
 				{categories.map((cat) => {
 					return (
 						<Pressable
 							key={cat}
 							onPress={() => onSelectCategory(cat)}
 							style={{
-								width: tabWidth,
+											width: tabWidth,
 								height: tabHeight,
-								justifyContent: "center",
-								alignItems: "center",
+											justifyContent: "center",
+											alignItems: "center",
+											paddingHorizontal: 8,
 							}}
 						>
 							<Text
-								style={{ color: "#000", textAlign: "center" }}
-								className="font-inter-bold text-sm lowercase"
+											style={{ color: "#000", textAlign: "center" }}
+								className="font-inter-bold text-sm"
+											numberOfLines={1}
+											ellipsizeMode="tail"
 							>
 								{cat}
 							</Text>
@@ -143,7 +146,7 @@ export default function CommunityScreen() {
 	const [clubs, setClubs] = useState<any[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
-	const [activeTab, setActiveTab] = useState<string>("explore");
+	const [activeTab, setActiveTab] = useState<string>("Explore");
 
 	const fetchClubs = async () => {
 		setLoading(true);
@@ -204,20 +207,20 @@ export default function CommunityScreen() {
 		>
 			{/* Title */}
 			<View style={{ marginBottom: 12 }}>
-				<Text className="text-4xl text-left font-inter-black">community</Text>
+				<Text className="text-4xl text-left font-inter-black">Community</Text>
 			</View>
 
 			{/* Sub-tab bar (replicates Resources CategoryPillBar) */}
 			<View style={{ alignItems: "center", marginBottom: 12 }}>
 				<CategoryPillBar
-					categories={["explore", "your clubs", "discussions"]}
+					categories={["Explore", "Your Clubs", "Discussions"]}
 					selectedCategory={activeTab}
 					onSelectCategory={(c: string) => setActiveTab(c as any)}
 				/>
 			</View>
 
 			{/* Active tab content: for now only Explore is implemented */}
-			{activeTab === "explore" && (
+			{activeTab === "Explore" && (
 				<View style={{ width: "100%", marginBottom: 12 }}>
 					{loading ? (
 						<View style={{ alignItems: "center", marginTop: 24 }}>
@@ -374,12 +377,12 @@ export default function CommunityScreen() {
 			)}
 
 			{/* placeholders for other tabs */}
-			{activeTab === "your clubs" && (
+			{activeTab === "Your Clubs" && (
 				<View style={{ paddingVertical: 20 }}>
 					<Text style={{ color: "#6b7280" }}>Your clubs will appear here.</Text>
 				</View>
 			)}
-			{activeTab === "discussions" && (
+			{activeTab === "Discussions" && (
 				<View style={{ paddingVertical: 20 }}>
 					<Text style={{ color: "#6b7280" }}>Discussions coming soon.</Text>
 				</View>

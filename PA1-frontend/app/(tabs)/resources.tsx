@@ -114,22 +114,25 @@ function CategoryPillBar({
 				]}
 			/>
 
-			<View style={{ flexDirection: "row", height: tabHeight }}>
+						<View style={{ flexDirection: "row", height: tabHeight }}>
 				{categories.map((cat) => {
 					return (
 						<Pressable
 							key={cat}
 							onPress={() => onSelectCategory(cat)}
 							style={{
-								width: tabWidth,
+											width: tabWidth,
 								height: tabHeight,
-								justifyContent: "center",
-								alignItems: "center",
+											justifyContent: "center",
+											alignItems: "center",
+											paddingHorizontal: 8,
 							}}
 						>
 							<Text
-								style={{ color: "#000", textAlign: "center" }}
-								className="font-inter-bold text-sm lowercase"
+											style={{ color: "#000", textAlign: "center" }}
+								className="font-inter-bold text-sm"
+											numberOfLines={1}
+											ellipsizeMode="tail"
 							>
 								{cat}
 							</Text>
@@ -241,7 +244,7 @@ export default function ResourcesScreen() {
 		>
 			{/* Title */}
 			<View style={{ marginBottom: 12 }}>
-				<Text className="text-4xl text-left font-inter-black">resources</Text>
+				<Text className="text-4xl text-left font-inter-black">Resources</Text>
 			</View>
 
 			{loading ? (

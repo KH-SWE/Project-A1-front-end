@@ -94,7 +94,7 @@ export default function LoginScreen() {
 			>
 				{/* Top container: smaller so inputs sit higher on screen */}
 				<View style={{ flex: 0.3, justifyContent: 'center', alignItems: 'center', paddingTop: insets.top + 12 }}>
-					<Text className="text-6xl font-inter-light">log in</Text>
+					<Text className="text-6xl font-inter-light">Log In</Text>
 				</View>
 
 				{/* Middle: inputs (kept scrollable just in case) */}
@@ -106,7 +106,7 @@ export default function LoginScreen() {
 						<TextInput
 							value={email}
 							onChangeText={setEmail}
-							placeholder="email"
+							placeholder="Email"
 							keyboardType="email-address"
 							autoCapitalize="none"
 							className="bg-white px-6 py-5 rounded-3xl font-inter-regular mb-3 mt-4 w-11/12"
@@ -122,7 +122,7 @@ export default function LoginScreen() {
 						<TextInput
 							value={password}
 							onChangeText={setPassword}
-							placeholder="password"
+							placeholder="Password"
 							secureTextEntry
 							className="bg-white px-6 py-5 rounded-3xl font-inter-regular mb-3 w-11/12"
 							style={{
@@ -159,14 +159,14 @@ export default function LoginScreen() {
 							opacity: loading ? 0.6 : 1,
 						}}
 					>
-						<Text className="text-black font-inter-bold text-center">{loading ? 'loading...' : 'continue'}</Text>
+						<Text className="text-black font-inter-bold text-center">{loading ? 'Loading...' : 'Continue'}</Text>
 					</Pressable>
 
 					<Pressable
 						onPress={() => router.back()}
 						className="px-6 py-5 rounded-3xl w-11/12 items-center"
 					>
-						<Text className="text-black font-inter-regular text-center underline">back</Text>
+						<Text className="text-black font-inter-regular text-center underline">Back</Text>
 					</Pressable>
 				</View>
 			</View>

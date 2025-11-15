@@ -443,7 +443,7 @@ export default function SignupScreen() {
 						paddingTop: insets.top + 12,
 					}}
 				>
-					<Text className="text-5xl font-inter-light">sign up</Text>
+					<Text className="text-5xl font-inter-light">Sign Up</Text>
 				</View>
 
 				<View style={{ flex: 1 }}>
@@ -478,7 +478,7 @@ export default function SignupScreen() {
 												<InputField
 													value={firstName}
 													onChangeText={setFirstName}
-													placeholder="first name"
+													placeholder="First Name"
 													noWidth
 													style={{ opacity: loading ? 0.6 : 1 }}
 													onFocus={handleFocus}
@@ -488,7 +488,7 @@ export default function SignupScreen() {
 												<InputField
 													value={lastName}
 													onChangeText={setLastName}
-													placeholder="last name"
+													placeholder="Last Name"
 													noWidth
 													style={{ opacity: loading ? 0.6 : 1 }}
 													onFocus={handleFocus}
@@ -498,14 +498,14 @@ export default function SignupScreen() {
 										<InputField
 											value={username}
 											onChangeText={setUsername}
-											placeholder="username"
+											placeholder="Username"
 											style={{ opacity: loading ? 0.6 : 1 }}
 											onFocus={handleFocus}
 										/>
 										<InputField
 											value={email}
 											onChangeText={setEmail}
-											placeholder="email"
+											placeholder="Email"
 											keyboardType="email-address"
 											autoCapitalize="none"
 											style={{ opacity: loading ? 0.6 : 1 }}
@@ -514,7 +514,7 @@ export default function SignupScreen() {
 										<InputField
 											value={password}
 											onChangeText={setPassword}
-											placeholder="password"
+											placeholder="Password"
 											secureTextEntry
 											style={{ opacity: loading ? 0.6 : 1 }}
 											onFocus={handleFocus}
@@ -522,7 +522,7 @@ export default function SignupScreen() {
 										<InputField
 											value={confirm}
 											onChangeText={setConfirm}
-											placeholder="confirm password"
+											placeholder="Confirm Password"
 											secureTextEntry
 											style={{ opacity: loading ? 0.6 : 1 }}
 											onFocus={handleFocus}
@@ -548,12 +548,12 @@ export default function SignupScreen() {
 													);
 												}}
 												getLabel={(it: any) => it.major_name ?? it.name}
-												placeholder="select major"
+												placeholder="Select Major"
 											/>
 										)}
 
 										{faculties.length === 0 ? (
-											<Text className="text-caption">loading faculties...</Text>
+											<Text className="text-caption">Loading Faculties...</Text>
 										) : (
 											<Dropdown
 												options={faculties}
@@ -562,7 +562,7 @@ export default function SignupScreen() {
 												)}
 												onSelect={(item: any) => setFacultyId(item.id)}
 												getLabel={(it: any) => it.faculty_name ?? it.name}
-												placeholder="select faculty"
+												placeholder="Select Faculty"
 											/>
 										)}
 
@@ -588,7 +588,7 @@ export default function SignupScreen() {
 												{/* label on the left to avoid feeling squeezed */}
 												<View style={{ flex: 1 }}>
 													<Text className="mx-2" style={{ color: "#666" }}>
-														year of study
+														Year of Study
 													</Text>
 												</View>
 												{/* controls on the right */}
@@ -633,7 +633,7 @@ export default function SignupScreen() {
 										</View>
 
 										{studyEnum.length === 0 ? (
-											<Text className="text-caption">loading...</Text>
+											<Text className="text-caption">Loading...</Text>
 										) : (
 											<Dropdown
 												options={studyEnum}
@@ -642,12 +642,12 @@ export default function SignupScreen() {
 												)}
 												onSelect={(item: any) => setStudyStatus(item.enumlabel)}
 												getLabel={(it: any) => it.enumlabel}
-												placeholder="select study status"
+												placeholder="Select Study Status"
 											/>
 										)}
 
 										{clubEnum.length === 0 ? (
-											<Text className="text-caption">loading...</Text>
+											<Text className="text-caption">Loading...</Text>
 										) : (
 											<Dropdown
 												options={clubEnum}
@@ -656,7 +656,7 @@ export default function SignupScreen() {
 												)}
 												onSelect={(item: any) => setClubStatus(item.enumlabel)}
 												getLabel={(it: any) => it.enumlabel}
-												placeholder="select club status"
+												placeholder="Select Club Status"
 											/>
 										)}
 									</>
@@ -681,7 +681,7 @@ export default function SignupScreen() {
 											}}
 										>
 											<Text className="text-black font-inter-bold">
-												{loading ? "registering..." : "continue"}
+												{loading ? "Registering..." : "Continue"}
 											</Text>
 										</Pressable>
 									)}
@@ -702,7 +702,7 @@ export default function SignupScreen() {
 												}}
 											>
 												<Text className="text-black font-inter-bold">
-													{loading ? "saving..." : "finish"}
+													{loading ? "Saving..." : "Finish"}
 												</Text>
 											</Pressable>
 											<Pressable
@@ -717,7 +717,7 @@ export default function SignupScreen() {
 													opacity: loading ? 0.6 : 1,
 												}}
 											>
-												<Text className="text-black font-inter-bold">skip</Text>
+												<Text className="text-black font-inter-bold">Skip</Text>
 											</Pressable>
 										</>
 									)}
@@ -728,7 +728,7 @@ export default function SignupScreen() {
 										className="px-6 py-4 rounded-3xl w-11/12 items-center"
 									>
 										<Text className="text-black font-inter-regular underline">
-											back
+											Back
 										</Text>
 									</Pressable>
 								</View>
