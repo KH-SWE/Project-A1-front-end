@@ -138,6 +138,9 @@ export default function ProfileScreen() {
 		);
 	};
 
+	// When logged in and the database is refreshed, the app only kicks the user out to the sign-in screen
+	// when they click on the 'profile' tab. So we need to handle that case here by detecting auth errors
+	// the moment they load / open the application.
 	useEffect(() => {
 		if (!userId) return;
 
