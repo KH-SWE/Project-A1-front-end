@@ -128,12 +128,11 @@ function CategoryPillBar({
 											paddingHorizontal: 8,
 							}}
 						>
-							<Text
-											style={{ color: "#000", textAlign: "center" }}
-								className="font-inter-bold text-sm"
-											numberOfLines={1}
-											ellipsizeMode="tail"
-							>
+														<Text
+															className="font-inter-bold text-sm text-black text-center"
+															numberOfLines={1}
+															ellipsizeMode="tail"
+														>
 								{cat}
 							</Text>
 						</Pressable>
@@ -259,7 +258,7 @@ export default function ResourcesScreen() {
 				</View>
 			) : error ? (
 				<View style={{ paddingVertical: 20 }}>
-					<Text style={{ color: "#b91c1c" }}>{error}</Text>
+					<Text className="text-red-700 font-inter-regular text-base">{error}</Text>
 				</View>
 			) : (
 				<View>
@@ -283,7 +282,7 @@ export default function ResourcesScreen() {
 								: [];
 							if (items.length === 0) {
 								return (
-									<Text style={{ color: "#6b7280" }}>
+									<Text className="text-gray-500 font-inter-regular text-base">
 										No resources in this category.
 									</Text>
 								);
@@ -313,8 +312,7 @@ export default function ResourcesScreen() {
 												}}
 											>
 												<Text
-													style={{ marginRight: 8 }}
-													className="font-inter-medium text-lg "
+													className="font-inter-medium text-lg mr-2 text-textOnBgLight"
 												>
 													{r.resource_name}
 												</Text>

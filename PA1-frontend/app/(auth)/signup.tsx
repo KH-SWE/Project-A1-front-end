@@ -86,8 +86,8 @@ const Dropdown: React.FC<{
 						alignItems: "center",
 					}}
 				>
-					<Text style={{ color: selected ? "#111" : "#666" }}>{label}</Text>
-					<Text style={{ color: "#999" }}>▾</Text>
+					<Text className={selected ? "text-textOnBgLight font-inter-regular text-base" : "text-gray-500 font-inter-regular text-base"}>{label}</Text>
+					<Text className="text-gray-400 font-inter-regular text-base">▾</Text>
 				</View>
 			</Pressable>
 
@@ -192,12 +192,7 @@ const Dropdown: React.FC<{
 											}}
 										>
 											<Text
-												style={{
-													color: "#111",
-													fontWeight: isSelected
-														? ("700" as any)
-														: ("400" as any),
-												}}
+											  className={`${isSelected ? "font-inter-bold" : "font-inter-regular"} text-textOnBgLight text-base`}
 											>
 												{text}
 											</Text>
@@ -209,7 +204,7 @@ const Dropdown: React.FC<{
 								onPress={() => setOpen(false)}
 								style={{ padding: 12, alignItems: "center" }}
 							>
-								<Text style={{ color: "#6b7280" }}>Cancel</Text>
+								<Text className="text-gray-500 font-inter-regular text-base">Cancel</Text>
 							</Pressable>
 						</View>
 					</View>
@@ -536,7 +531,7 @@ export default function SignupScreen() {
 									<>
 										{/* simple list selection */}
 										{majors.length === 0 ? (
-											<Text className="text-caption">Loading majors...</Text>
+											<Text className="text-caption">Loading Majors...</Text>
 										) : (
 											<Dropdown
 												options={majors}
@@ -587,7 +582,7 @@ export default function SignupScreen() {
 											>
 												{/* label on the left to avoid feeling squeezed */}
 												<View style={{ flex: 1 }}>
-													<Text className="mx-2" style={{ color: "#666" }}>
+													<Text className="mx-2 text-gray-500 font-inter-regular text-base">
 														Year of Study
 													</Text>
 												</View>
@@ -607,10 +602,10 @@ export default function SignupScreen() {
 															marginRight: 8,
 														}}
 													>
-														<Text style={{ fontSize: 20 }}>−</Text>
+														<Text className="text-xl font-inter-regular">−</Text>
 													</Pressable>
 													<View style={{ minWidth: 28, alignItems: "center" }}>
-														<Text style={{ fontSize: 16, color: "#111" }}>
+														<Text className="text-base text-textOnBgLight font-inter-regular">
 															{studyYear || "1"}
 														</Text>
 													</View>
@@ -626,7 +621,7 @@ export default function SignupScreen() {
 															marginLeft: 8,
 														}}
 													>
-														<Text style={{ fontSize: 20 }}>+</Text>
+														<Text className="text-xl font-inter-regular">+</Text>
 													</Pressable>
 												</View>
 											</View>

@@ -560,21 +560,12 @@ export default function ProfileScreen() {
 					}}
 				>
 					<ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-						<Text
-							style={{
-								fontFamily: "Inter",
-								fontSize: 28,
-								fontWeight: "700",
-								marginBottom: 12,
-							}}
-						>
+						<Text className="font-inter-bold text-3xl mb-3 text-textOnBgLight">
 							Edit profile
 						</Text>
 
 						{/* Username + check */}
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>
-							Username
-						</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Username</Text>
 						<View
 							style={{
 								flexDirection: "row",
@@ -601,35 +592,17 @@ export default function ProfileScreen() {
 								onPress={() => checkUsernameAvailability(form.username)}
 								className="bg-blue-100 rounded px-3 py-2"
 							>
-								<Text style={{ fontFamily: "Inter" }} className="text-blue-600">
-									Check
-								</Text>
+								<Text className="text-blue-600 font-inter-regular text-base">Check</Text>
 							</Pressable>
 						</View>
 						{usernameAvailable === true ? (
-							<Text
-								style={{
-									fontFamily: "Inter",
-									color: "#059669",
-									marginBottom: 12,
-								}}
-							>
-								Username available
-							</Text>
+							<Text className="text-green-600 font-inter-regular mb-3 text-base">Username available</Text>
 						) : usernameAvailable === false ? (
-							<Text
-								style={{
-									fontFamily: "Inter",
-									color: "#ef4444",
-									marginBottom: 12,
-								}}
-							>
-								Username taken
-							</Text>
+							<Text className="text-red-500 font-inter-regular mb-3 text-base">Username taken</Text>
 						) : null}
 
 						{/* First + Last name */}
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>Name</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Name</Text>
 						<View style={{ flexDirection: "row", gap: 8, marginBottom: 12 }}>
 							<TextInput
 								value={form.firstName}
@@ -706,21 +679,10 @@ export default function ProfileScreen() {
 									{uploadingAvatar ? (
 										<ActivityIndicator />
 									) : (
-										<Text style={{ fontFamily: "Inter", color: "#111" }}>
-											Change avatar
-										</Text>
+										<Text className="font-inter-regular text-textOnBgLight text-base">Change avatar</Text>
 									)}
 								</Pressable>
-								<Text
-									style={{
-										fontFamily: "Inter",
-										color: "#6b7280",
-										marginTop: 8,
-										fontSize: 12,
-									}}
-								>
-									Tap Change avatar to pick a photo.
-								</Text>
+								<Text className="font-inter-regular text-gray-500 text-xs mt-2">Tap Change avatar to pick a photo.</Text>
 								<Pressable
 									onPress={handleRemoveAvatar}
 									style={{
@@ -734,15 +696,13 @@ export default function ProfileScreen() {
 										alignItems: "center",
 									}}
 								>
-									<Text style={{ fontFamily: "Inter", color: "#b91c1c" }}>
-										Remove avatar
-									</Text>
+									<Text className="font-inter-regular text-red-700 text-base">Remove avatar</Text>
 								</Pressable>
 							</View>
 						</View>
 
 						{/* Bio */}
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>Bio</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Bio</Text>
 						<TextInput
 							value={form.bio}
 							onChangeText={(t) => setForm((p: any) => ({ ...p, bio: t }))}
@@ -760,9 +720,7 @@ export default function ProfileScreen() {
 						/>
 
 						{/* Socials */}
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>
-							Instagram
-						</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Instagram</Text>
 						<TextInput
 							value={form.instagramUrl}
 							onChangeText={(t) =>
@@ -777,9 +735,7 @@ export default function ProfileScreen() {
 								marginBottom: 12,
 							}}
 						/>
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>
-							LinkedIn
-						</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">LinkedIn</Text>
 						<TextInput
 							value={form.linkedinUrl}
 							onChangeText={(t) =>
@@ -794,9 +750,7 @@ export default function ProfileScreen() {
 								marginBottom: 12,
 							}}
 						/>
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>
-							Twitter
-						</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Twitter</Text>
 						<TextInput
 							value={form.twitterUrl}
 							onChangeText={(t) =>
@@ -811,9 +765,7 @@ export default function ProfileScreen() {
 								marginBottom: 12,
 							}}
 						/>
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>
-							Discord
-						</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Discord</Text>
 						<TextInput
 							value={form.discordUrl}
 							onChangeText={(t) =>
@@ -830,7 +782,7 @@ export default function ProfileScreen() {
 						/>
 
 						{/* Academics (simple selectors kept) */}
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>Major</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Major</Text>
 						<Pressable
 							onPress={() => setOpenDropdown("major")}
 							style={{
@@ -841,13 +793,9 @@ export default function ProfileScreen() {
 								marginBottom: 12,
 							}}
 						>
-							<Text style={{ fontFamily: "Inter" }}>
-								{form.major || "select major"}
-							</Text>
+							<Text className="font-inter-regular text-base text-textOnBgLight">{form.major || "select major"}</Text>
 						</Pressable>
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>
-							Faculty
-						</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Faculty</Text>
 						<Pressable
 							onPress={() => setOpenDropdown("faculty")}
 							style={{
@@ -858,14 +806,10 @@ export default function ProfileScreen() {
 								marginBottom: 12,
 							}}
 						>
-							<Text style={{ fontFamily: "Inter" }}>
-								{form.faculty || "select faculty"}
-							</Text>
+							<Text className="font-inter-regular text-base text-textOnBgLight">{form.faculty || "select faculty"}</Text>
 						</Pressable>
 
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>
-							Study Year
-						</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Study Year</Text>
 						<View
 							className="mb-3 rounded-3xl"
 							style={{
@@ -883,9 +827,7 @@ export default function ProfileScreen() {
 								}}
 							>
 								<View style={{ flex: 1 }}>
-									<Text style={{ color: "#666", fontFamily: "Inter" }}>
-										year of study
-									</Text>
+									<Text className="text-gray-500 font-inter-regular text-base">year of study</Text>
 								</View>
 								<View style={{ flexDirection: "row", alignItems: "center" }}>
 									<Pressable
@@ -903,18 +845,10 @@ export default function ProfileScreen() {
 											marginRight: 8,
 										}}
 									>
-										<Text style={{ fontSize: 20 }}>−</Text>
+										<Text className="text-xl font-inter-regular">−</Text>
 									</Pressable>
 									<View style={{ minWidth: 28, alignItems: "center" }}>
-										<Text
-											style={{
-												fontSize: 16,
-												color: "#111",
-												fontFamily: "Inter",
-											}}
-										>
-											{form.studyYear || "1"}
-										</Text>
+										<Text className="text-base text-textOnBgLight font-inter-regular">{form.studyYear || "1"}</Text>
 									</View>
 									<Pressable
 										onPress={() => {
@@ -931,15 +865,13 @@ export default function ProfileScreen() {
 											marginLeft: 8,
 										}}
 									>
-										<Text style={{ fontSize: 20 }}>+</Text>
+										<Text className="text-xl font-inter-regular">+</Text>
 									</Pressable>
 								</View>
 							</View>
 						</View>
 
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>
-							Study Status
-						</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Study Status</Text>
 						<Pressable
 							onPress={() => setOpenDropdown("study")}
 							style={{
@@ -950,13 +882,9 @@ export default function ProfileScreen() {
 								marginBottom: 12,
 							}}
 						>
-							<Text style={{ fontFamily: "Inter" }}>
-								{form.studyStatus || "select study status"}
-							</Text>
+							<Text className="font-inter-regular text-base text-textOnBgLight">{form.studyStatus || "select study status"}</Text>
 						</Pressable>
-						<Text style={{ fontFamily: "Inter", marginBottom: 6 }}>
-							Club Status
-						</Text>
+						<Text className="font-inter-regular mb-1.5 text-base text-textOnBgLight">Club Status</Text>
 						<Pressable
 							onPress={() => setOpenDropdown("club")}
 							style={{
@@ -967,9 +895,7 @@ export default function ProfileScreen() {
 								marginBottom: 12,
 							}}
 						>
-							<Text style={{ fontFamily: "Inter" }}>
-								{form.clubStatus || "select club status"}
-							</Text>
+							<Text className="font-inter-regular text-base text-textOnBgLight">{form.clubStatus || "select club status"}</Text>
 						</Pressable>
 
 						{/* Actions */}
@@ -1063,15 +989,7 @@ export default function ProfileScreen() {
 									marginBottom: 12,
 								}}
 							>
-								<Text
-									style={{
-										fontFamily: "Inter",
-										color: "#374151",
-										fontSize: 16,
-									}}
-								>
-									Cancel
-								</Text>
+								<Text className="font-inter-regular text-base text-gray-700">Cancel</Text>
 							</Pressable>
 							<Pressable
 								onPress={handleSave}
@@ -1090,18 +1008,7 @@ export default function ProfileScreen() {
 								{saving || uploadingAvatar ? (
 									<ActivityIndicator color="#fff" />
 								) : (
-									<Text
-										style={{
-											fontFamily: "Inter",
-											color:
-												!canSave || saving || uploadingAvatar
-													? "#fff"
-													: "#000000",
-											fontSize: 16,
-										}}
-									>
-										Save
-									</Text>
+									<Text className={`font-inter-medium text-base ${!canSave || saving || uploadingAvatar ? "text-white" : "text-black"}`}>Save</Text>
 								)}
 							</Pressable>
 						</View>
@@ -1131,15 +1038,7 @@ export default function ProfileScreen() {
 									alignItems: "center",
 								}}
 							>
-								<Text
-									style={{
-										fontFamily: "Inter",
-										color: "#b91c1c",
-										fontSize: 16,
-									}}
-								>
-									Log out
-								</Text>
+								<Text className="font-inter-regular text-base text-red-700">Log out</Text>
 							</Pressable>
 						</View>
 
@@ -1241,7 +1140,7 @@ export default function ProfileScreen() {
 															borderBottomColor: "#f3f4f6",
 														}}
 													>
-														<Text style={{ color: "#111" }}>{label}</Text>
+														<Text className="text-textOnBgLight font-inter-regular text-base">{label}</Text>
 													</Pressable>
 												);
 											})}
@@ -1250,7 +1149,7 @@ export default function ProfileScreen() {
 											onPress={() => setOpenDropdown(null)}
 											style={{ padding: 12, alignItems: "center" }}
 										>
-											<Text style={{ color: "#6b7280" }}>Cancel</Text>
+											<Text className="text-gray-500 font-inter-regular text-base">Cancel</Text>
 										</Pressable>
 									</View>
 								</View>
@@ -1274,10 +1173,7 @@ export default function ProfileScreen() {
 						opacity: 0.6,
 					}}
 				/>
-				<Text
-					style={{ fontFamily: "Inter", opacity: 0.6 }}
-					className="text-sm text-textOnBgLight"
-				>
+				<Text className="text-sm text-textOnBgLight font-inter-regular">
 					{"that\u2019s all!"}
 				</Text>
 			</View>

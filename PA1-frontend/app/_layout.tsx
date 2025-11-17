@@ -95,6 +95,8 @@ export default function RootLayout() {
 					<Stack.Screen name="welcome" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)/signup" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
+					{/* Hide header for the clubs segment and let its local layout control visuals */}
+					<Stack.Screen name="clubs" options={{ headerShown: false }} />
 					<Stack.Screen
 						name="modal"
 						options={{ presentation: "modal", title: "Modal" }}

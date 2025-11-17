@@ -11,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { colors } from "../constants/colors";
 import { shadows } from "../constants/shadows";
+import { useRouter } from "expo-router";
 // Icons
 import SearchIcon from "@/assets/icons/search.svg";
 import SearchIconFilled from "@/assets/icons/search-filled.svg";
@@ -26,6 +27,7 @@ import PlusIcon from "@/assets/icons/plus.svg";
 
 export default function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   
   // Filter out the index route
   const filteredRoutes = state.routes.filter(route => route.name !== 'index');
@@ -163,11 +165,11 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
         <View style={{ width: circleSize, height: circleSize, alignItems: 'center', justifyContent: 'center' }}>
           {/* Options: positioned above button, anchored to right so they expand left */}
           <Animated.View style={[{ position: 'absolute', bottom: circleSize + 8, right: 0, alignItems: 'flex-end', width: 160 }, menuStyle]} pointerEvents={isOpen ? 'auto' : 'none'}>
-            <TouchableOpacity className="rounded-xl shadow-lg" style={{ backgroundColor: colors.backgroundLight, paddingVertical: 8, paddingHorizontal: 14, marginBottom: 8, width: 160, alignItems: 'center' }} onPress={() => { /* placeholder */ }}>
-              <Text style={{ color: colors.textOnBgLight }} className="font-inter-bold text-sm">New Club</Text>
+            <TouchableOpacity className="rounded-xl shadow-lg" style={{ backgroundColor: colors.backgroundLight, paddingVertical: 8, paddingHorizontal: 14, marginBottom: 8, width: 160, alignItems: 'center' }} onPress={() => { setIsOpen(false); router.push('/create-club' as any); }}>
+              <Text className="font-inter-bold text-sm text-textOnBgLight">New Club</Text>
             </TouchableOpacity>
             <TouchableOpacity className="rounded-xl shadow-lg" style={{ backgroundColor: colors.backgroundLight, paddingVertical: 8, paddingHorizontal: 14, width: 160, alignItems: 'center' }} onPress={() => { /* placeholder */ }}>
-              <Text style={{ color: colors.textOnBgLight }} className="font-inter-bold text-sm">New Post</Text>
+              <Text className="font-inter-bold text-sm text-textOnBgLight">New Post</Text>
             </TouchableOpacity>
           </Animated.View>
 

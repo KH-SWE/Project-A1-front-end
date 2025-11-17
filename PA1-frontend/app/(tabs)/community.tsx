@@ -12,6 +12,7 @@ import {
 	NativeSyntheticEvent,
 	NativeScrollEvent,
 } from "react-native";
+import { useRouter } from "expo-router";
 import Animated, {
 	useSharedValue,
 	useAnimatedStyle,
@@ -124,12 +125,11 @@ function CategoryPillBar({
 											paddingHorizontal: 8,
 							}}
 						>
-							<Text
-											style={{ color: "#000", textAlign: "center" }}
-								className="font-inter-bold text-sm"
-											numberOfLines={1}
-											ellipsizeMode="tail"
-							>
+														<Text
+															className="font-inter-bold text-sm text-black text-center"
+															numberOfLines={1}
+															ellipsizeMode="tail"
+														>
 								{cat}
 							</Text>
 						</Pressable>
@@ -144,6 +144,7 @@ export default function CommunityScreen() {
 	const insets = useSafeAreaInsets();
 	const { width: windowWidth } = useWindowDimensions();
   const { userId } = useAuth();
+  const router = useRouter();
 
 	const [clubs, setClubs] = useState<any[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -247,7 +248,7 @@ export default function CommunityScreen() {
 							>
 								{slides.length === 0 ? (
 									<View style={{ width: slideWidth }}>
-										<Text style={{ color: "#6b7280" }}>No clubs yet.</Text>
+										<Text className="text-gray-500 font-inter-regular text-base">No clubs yet.</Text>
 									</View>
 								) : (
 									slides.map((group, idx) => (
@@ -256,7 +257,11 @@ export default function CommunityScreen() {
 											style={{ width: slideWidth, marginTop: 12 }}
 										>
 											{group.map((c: any) => (
-												<Pressable key={c.id} style={{ marginBottom: 12, marginHorizontal: 6 }}>
+												<Pressable
+													key={c.id}
+													style={{ marginBottom: 12, marginHorizontal: 6 }}
+													onPress={() => router.push({ pathname: "/clubs/[id]", params: { id: String(c.id) } })}
+												>
 													<View
 														style={[
 															shadows.medium,
@@ -309,7 +314,7 @@ export default function CommunityScreen() {
 																	borderRadius: 12,
 																}}
 															>
-																<Text style={{ color: "#fff", fontSize: 12 }}>
+																<Text className="text-white text-xs font-inter-medium">
 																	{(c.member_count ?? 0) + " members"}
 																</Text>
 															</View>
@@ -322,23 +327,13 @@ export default function CommunityScreen() {
 																	right: 12,
 																}}
 															>
-																<Text
-																	style={{
-																		color: "#fff",
-																		fontSize: 16,
-																		fontWeight: "700",
-																	}}
-																>
+																<Text className="text-white text-base font-inter-bold">
 																	{c.name}
 																</Text>
 																{c.description ? (
 																	<Text
-																		numberOfLines={2}
-																		style={{
-																			color: "#fff",
-																			opacity: 0.95,
-																			marginTop: 4,
-																		}}
+																	  numberOfLines={2}
+																	  className="text-white/90 mt-1 font-inter-regular text-sm"
 																	>
 																		{c.description}
 																	</Text>
@@ -387,12 +382,12 @@ export default function CommunityScreen() {
 			{/* placeholders for other tabs */}
 			{activeTab === "Your Clubs" && (
 				<View style={{ paddingVertical: 20 }}>
-					<Text style={{ color: "#6b7280" }}>Your clubs will appear here.</Text>
+					<Text className="text-gray-500 font-inter-regular text-base">Your clubs will appear here.</Text>
 				</View>
 			)}
 			{activeTab === "Discussions" && (
 				<View style={{ paddingVertical: 20 }}>
-					<Text style={{ color: "#6b7280" }}>Discussions coming soon.</Text>
+					<Text className="text-gray-500 font-inter-regular text-base">Discussions coming soon.</Text>
 				</View>
 			)}
 
