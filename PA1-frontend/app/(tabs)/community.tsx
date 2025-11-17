@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
 	ScrollView,
 	Text,
@@ -20,6 +20,7 @@ import Animated, {
 import { colors } from "../../constants/colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { api } from "../lib/api";
+import { useAuth } from "@/components/AuthProvider";
 import { shadows } from "@/constants/shadows";
 
 import DefaultAvatar from "@/assets/profile/default-avatar.png";
@@ -142,13 +143,19 @@ function CategoryPillBar({
 export default function CommunityScreen() {
 	const insets = useSafeAreaInsets();
 	const { width: windowWidth } = useWindowDimensions();
+  const { userId } = useAuth();
 
 	const [clubs, setClubs] = useState<any[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
 	const [activeTab, setActiveTab] = useState<string>("Explore");
 
-	const fetchClubs = async () => {
+	const fetchClubs = useCallback(async () => {
+		// Only fetch when authenticated
+		if (!userId) {
+			setClubs([]);
+			return;
+		}
 		setLoading(true);
 		try {
 			const res = await api.get("/api/clubs/");
@@ -159,11 +166,12 @@ export default function CommunityScreen() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [userId]);
 
 	useEffect(() => {
+		// Re-run when auth changes; no-op when logged out
 		fetchClubs();
-	}, []);
+	}, [fetchClubs]);
 
 	const onRefresh = async () => {
 		setRefreshing(true);
