@@ -150,6 +150,7 @@ export default function CommunityScreen() {
 	const [loading, setLoading] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
 	const [activeTab, setActiveTab] = useState<string>("Explore");
+	const [discussions, setDiscussions] = useState<any[]>([]);
 
 	const fetchClubs = useCallback(async () => {
 		// Only fetch when authenticated
@@ -169,14 +170,28 @@ export default function CommunityScreen() {
 		}
 	}, [userId]);
 
+	const fetchDiscussions = useCallback(async () => {
+		if (!userId) {
+			setDiscussions([]);
+			return;
+		}
+		try {
+			const res = await api.get("/api/discussions");
+			setDiscussions(res.data || []);
+		} catch (e) {
+			console.warn("failed to load discussions", e);
+		}
+	}, [userId]);
+
 	useEffect(() => {
 		// Re-run when auth changes; no-op when logged out
 		fetchClubs();
-	}, [fetchClubs]);
+		fetchDiscussions();
+	}, [fetchClubs, fetchDiscussions]);
 
 	const onRefresh = async () => {
 		setRefreshing(true);
-		await fetchClubs();
+		await Promise.all([fetchClubs(), fetchDiscussions()]);
 		setRefreshing(false);
 	};
 
@@ -386,8 +401,77 @@ export default function CommunityScreen() {
 				</View>
 			)}
 			{activeTab === "Discussions" && (
-				<View style={{ paddingVertical: 20 }}>
-					<Text className="text-gray-500 font-inter-regular text-base">Discussions coming soon.</Text>
+				<View style={{ paddingVertical: 12 }}>
+					{discussions.length === 0 ? (
+						<View style={{ paddingVertical: 20, alignItems: "center" }}>
+							<Text className="text-gray-500 font-inter-regular text-base">No discussions yet. Be the first to share!</Text>
+						</View>
+					) : (
+						<View style={{ gap: 12 }}>
+							{discussions.map((post: any) => (
+								<Pressable
+									key={post.id}
+									style={{
+										backgroundColor: colors.backgroundLight,
+										borderWidth: 1,
+										borderColor: colors.accent,
+										borderRadius: 12,
+										padding: 16,
+										...shadows.soft,
+									}}
+									onPress={() => router.push(`/post/${post.id}` as any)}
+								>
+									<View style={{ flexDirection: "row", marginBottom: 8 }}>
+										<ImageBackground
+											source={post.author?.avatar_url ? { uri: post.author.avatar_url } : DefaultAvatar}
+											style={{
+												width: 36,
+												height: 36,
+												borderRadius: 18,
+												marginRight: 12,
+											}}
+											imageStyle={{ borderRadius: 18 }}
+										>
+											<View
+												style={{
+													flex: 1,
+													backgroundColor: "transparent",
+												}}
+											/>
+										</ImageBackground>
+										<View style={{ flex: 1 }}>
+											<Text className="font-inter-semibold text-sm text-textOnBgLight" numberOfLines={1}>
+												{post.author?.username || "Anonymous"}
+											</Text>
+											<Text className="font-inter-regular text-xs text-accent">
+												{new Date(post.created_at).toLocaleDateString()}
+											</Text>
+										</View>
+									</View>
+									{post.title && (
+										<Text className="font-inter-bold text-base text-textOnBgLight mb-2">
+											{post.title}
+										</Text>
+									)}
+									<Text
+										className="font-inter-regular text-sm text-textOnBgLight"
+										numberOfLines={3}
+										ellipsizeMode="tail"
+									>
+										{post.content}
+									</Text>
+									<View style={{ flexDirection: "row", marginTop: 12, gap: 20 }}>
+										<Text className="font-inter-regular text-xs text-accent">
+											❤️ {post.like_count || 0}
+										</Text>
+										<Text className="font-inter-regular text-xs text-accent">
+											💬 {post.comment_count || 0}
+										</Text>
+									</View>
+								</Pressable>
+							))}
+						</View>
+					)}
 				</View>
 			)}
 
