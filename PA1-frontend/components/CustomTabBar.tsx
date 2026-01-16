@@ -168,7 +168,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
             <TouchableOpacity className="rounded-xl shadow-lg" style={{ backgroundColor: colors.backgroundLight, paddingVertical: 8, paddingHorizontal: 14, marginBottom: 8, width: 160, alignItems: 'center' }} onPress={() => { setIsOpen(false); router.push('/create-club' as any); }}>
               <Text className="font-inter-bold text-sm text-textOnBgLight">New Club</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="rounded-xl shadow-lg" style={{ backgroundColor: colors.backgroundLight, paddingVertical: 8, paddingHorizontal: 14, width: 160, alignItems: 'center' }} onPress={() => { /* placeholder */ }}>
+            <TouchableOpacity className="rounded-xl shadow-lg" style={{ backgroundColor: colors.backgroundLight, paddingVertical: 8, paddingHorizontal: 14, width: 160, alignItems: 'center' }} onPress={() => { setIsOpen(false); router.push('/create-post' as any); }}>
               <Text className="font-inter-bold text-sm text-textOnBgLight">New Post</Text>
             </TouchableOpacity>
           </Animated.View>
